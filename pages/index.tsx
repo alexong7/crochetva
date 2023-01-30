@@ -3,8 +3,14 @@ import Image from "next/image";
 import Header from "@/components/Header";
 import Landing from "@/components/Landing";
 import { Tab } from "@headlessui/react";
+import { fetchCategories } from "../utils/fetchCategories";
+import { GetServerSideProps } from "next";
 
-export default function Home() {
+interface Props {
+  categories: Category[];
+}
+
+export default function Home({ categories }: Props) {
   return (
     <>
       <Head>
@@ -19,30 +25,29 @@ export default function Home() {
       <main className="relative h-[200vh] min-h-screen">
         <Landing />
       </main>
-      <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#ade1ff]">
-        <div className="spae-y-10 py-16">
-          <h1 className="text-center text-4xl font-medium tracking-wide text-white md:text-5xl">
-            Best Sellers
+      <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#fffafa]">
+        <div className="space-y-10 py-16">
+          <h1 className="text-center text-4xl font-medium tracking-wide text-black md:text-5xl">
+            Shop Now
           </h1>
 
           <Tab.Group>
             <Tab.List className="flex justify-center">
-              {/* {categories.map((category) => (
+              {categories.map((category) => (
                 <Tab
                   key={category._id}
                   id={category._id}
                   className={({ selected }) =>
                     `whitespace-nowrap rounded-t-lg py-3 px-5 text-sm font-light outline-none md:py-4 md:px-6 md:text-base ${
                       selected
-                        ? "borderGradient bg-[#35383C] text-white"
+                        ? "gradient border-b-2 border-[#35383C] text-white"
                         : "border-b-2 border-[#35383C] text-[#747474]"
                     }`
                   }
                 >
                   {category.title}
                 </Tab>
-              ))} */}
-              Dinos
+              ))}
             </Tab.List>
             <Tab.Panels className="mx-auto max-w-fit pt-10 pb-24 sm:px-4">
               {/* <Tab.Panel className="tabPanel">{showProducts(0)}</Tab.Panel>
@@ -57,11 +62,13 @@ export default function Home() {
   );
 }
 
-// // Backend Code to Sanity
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   // const tabCategories = await fetchCategories();
+// Backend Code to Sanity
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const categories = await fetchCategories();
 
-//   return {
-//     props: {},
-//   };
-// };
+  return {
+    props: {
+      categories,
+    },
+  };
+};

@@ -23,6 +23,14 @@
     @apply bg-gradient-to-r from-pink-500 to-violet-500;
   }
 
+  .borderGradient {
+    text-align: center;
+    padding-bottom: 5px;
+    background: linear-gradient(to right, #ec4899, #8b5cf6) left bottom
+      no-repeat;
+    background-size: 100% 2px;
+  }
+
   .link {
     @apply relative cursor-pointer text-lg font-medium before:absolute before:inset-x-0
     before:-bottom-1.5 before:h-0.5 before:origin-left before:scale-x-0 before:transform before:rounded-lg before:bg-black
