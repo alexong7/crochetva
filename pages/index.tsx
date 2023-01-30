@@ -1,13 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
-import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
 import Header from "@/components/Header";
 import Landing from "@/components/Landing";
 import { Tab } from "@headlessui/react";
-import { GetServerSideProps, GetServerSidePropsResult } from "next";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
@@ -62,11 +57,11 @@ export default function Home() {
   );
 }
 
-// Backend Code to Sanity
-export const getServerSideProps: GetServerSideProps = async () => {
-  // const tabCategories = await fetchCategories();
+// // Backend Code to Sanity
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   // const tabCategories = await fetchCategories();
 
-  return {
-    props: {},
-  };
-};
+//   return {
+//     props: {},
+//   };
+// };
