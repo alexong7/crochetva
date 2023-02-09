@@ -10,7 +10,8 @@ const query = groq`
     image,
     price,
     slug,
-    title
+    title,
+    quantity,
   }`;
 
 type Data = {
