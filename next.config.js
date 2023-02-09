@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: ["i.pinimg.com", "e7.pngegg.com", "i.postimg.cc", "cdn.sanity.io"],
   },

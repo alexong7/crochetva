@@ -1,13 +1,26 @@
+import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import React from "react";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 type Props = {
   product: Product;
 };
 
 function Product({ product }: Props) {
+  const dispatch = useDispatch();
+
+  const addItemToBasket = () => {
+    dispatch(addToBasket(product));
+
+    toast.success(`${product.title} added to basket`, {
+      position: "bottom-center",
+    });
+  };
+
   return (
     <div
       className="flex h-fit w-[320px] select-none flex-col space-y-3 rounded-xl 
@@ -31,6 +44,7 @@ function Product({ product }: Props) {
         <div
           className="gradient flex h-12 w-12 flex-shrink-0 cursor-pointer
         items-center justify-center rounded-full md:h-[70px] md:w-[70px]"
+          onClick={addItemToBasket}
         >
           <ShoppingCartIcon className="h-5 w-5 text-white" />
         </div>

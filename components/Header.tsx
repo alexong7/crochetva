@@ -2,8 +2,12 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
+import { selectBasketItems } from "@/redux/basketSlice";
 
 function Header() {
+  // Track how many items in cart
+  const items = useSelector(selectBasketItems);
   const session = false;
 
   return (
@@ -37,7 +41,7 @@ function Header() {
               className="gradient absolute -right-1 -top-1 z-50 flex h-4 
             w-4 items-center justify-center rounded-full text-[10px] text-white"
             >
-              5
+              {items.length}
             </span>
             <ShoppingBagIcon className="headerIcon" />
           </div>
