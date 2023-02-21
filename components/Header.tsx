@@ -4,11 +4,12 @@ import Link from "next/link";
 import { ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectBasketItems } from "@/redux/basketSlice";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 function Header() {
   // Track how many items in cart
   const items = useSelector(selectBasketItems);
-  const session = false;
+  const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-30 flex w-full items-center justify-between bg-[#FFCEEE] p-4">
@@ -49,14 +50,15 @@ function Header() {
 
         {session ? (
           <Image
-            src={defaultUserIcon}
+            src={session.user?.image || defaultUserIcon}
             alt=""
             className="cursor-pointer rounded-full"
             width={34}
             height={34}
+            onClick={() => signOut()}
           />
         ) : (
-          <UserIcon className="headerIcon" />
+          <UserIcon className="headerIcon" onClick={() => signIn()} />
         )}
       </div>
     </header>
