@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Stripe } from "stripe";
+import { useSession } from "next-auth/react";
 
 type Props = {};
 
@@ -17,6 +18,7 @@ function Checkout({}: Props) {
   const items = useSelector(selectBasketItems);
   const basketTotal = useSelector(selectBasketTotal);
   const router = useRouter();
+  const { data: session } = useSession();
 
   // States
   // ------
@@ -33,6 +35,7 @@ function Checkout({}: Props) {
       "/api/checkout_sessions",
       {
         items: items,
+        email: session?.user?.email || null,
       },
     );
 
