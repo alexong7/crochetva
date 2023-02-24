@@ -4,8 +4,8 @@ export default {
     type: "document",
     fields: [
         {
-            name: "order_number",
-            title: "Order Number",
+            name: "payment_number",
+            title: "Payment Number",
             type: "string",
           },
       {
@@ -17,10 +17,7 @@ export default {
         name: "images",
         title: "Images",
         type: "array",
-        of: [{ type: "image" }],
-        options: {
-          hotspot: true,
-        },
+        of: [{ type: "string" }],
       },
       {
         name: "email",

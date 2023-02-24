@@ -15,18 +15,22 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useSession } from "next-auth/react";
+import { fetchProducts } from "@/utils/fetchProducts";
+import { urlFor } from "@/sanity";
+import product from "@/sanity/schemas/product";
 
 interface Props {
-  products: StripeProduct[];
+  lineItems: StripeProduct[];
+  products: Product[];
 }
 
-function Success({ products }: Props) {
+function Success({ lineItems, products }: Props) {
   const router = useRouter();
   const { session_id } = router.query;
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
-  const subtotal = products.reduce(
+  const subtotal = lineItems.reduce(
     (acc, product) => acc + product.price.unit_amount / 100,
     0,
   );
@@ -38,6 +42,21 @@ function Success({ products }: Props) {
 
   const handleShowOrderSummary = () => {
     setShowOrderSummary(!showOrderSummary);
+  };
+
+  // Make a map of product titles to product image url
+  const productToImage: { [key: string]: string } = {};
+  products.map(
+    (product) =>
+      (productToImage[product.title] = urlFor(product.image[0]).url()),
+  );
+
+  const getImageForLineItem = (productDescription: string) => {
+    if (productDescription == null || !(productDescription in productToImage)) {
+      return defaultImage;
+    }
+
+    return productToImage[productDescription];
   };
 
   return (
@@ -161,7 +180,7 @@ function Success({ products }: Props) {
             {showOrderSummaryCondition && (
               <div className="mx-auto max-w-xl divide-y border-gray-300 px-4 py-4 lg:mx-0 lg:max-w-lg lg:px-10 lg:py-16">
                 <div className="space-y-4 pb-4">
-                  {products.map((product) => (
+                  {lineItems.map((product) => (
                     // Main row container
                     <div
                       key={product.id}
@@ -171,7 +190,7 @@ function Success({ products }: Props) {
                       <div className="relative flex h-16 w-16 items-center justify-center rounded-md border border-gray-300 bg-[#F1F1F1] text-xs text-white">
                         <div className="relative h-7 w-7 animate-bounce rounded-md">
                           <Image
-                            src={defaultImage}
+                            src={getImageForLineItem(product.description)}
                             layout="fill"
                             objectFit="contain"
                             alt=""
@@ -232,10 +251,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
 }) => {
   const sessionId = query.session_id as string;
-  const products = await fetchLineItems(sessionId);
+  const lineItems = await fetchLineItems(sessionId);
+  const products = await fetchProducts();
 
   return {
     props: {
+      lineItems,
       products,
     },
   };

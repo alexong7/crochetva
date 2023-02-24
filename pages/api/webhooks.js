@@ -28,15 +28,26 @@ import Stripe from "stripe";
 const fufillOrder = async (session) => {
   console.log("fulfilling order");
 
+  let images = new Set();
+
+  for (const [key, value] of Object.entries(session.metadata)) {
+    console.log(`${key}: ${value}`);
+    if (key.includes("image")) {
+      images.add(value);
+    }
+  }
+
+  console.log("images", images);
+
   // New Document to be posted to the Orders Collection
   const mutations = [
     {
       create: {
         _id: session.id,
         _type: "order",
-        order_number: session.id,
+        payment_number: session.payment_intent,
         amount: session.amount_total / 100,
-        images: JSON.parse(session.metadata.images),
+        images: Array.from(images),
         email: session.metadata.email,
       },
     },

@@ -21,11 +21,27 @@ export default async function handler(
         product_data: {
           name: item.title,
           images: [urlFor(item.image[0]).url()],
+          metadata: {
+            image: urlFor(item.image[0]).url(),
+            sanityProductID: item._id
+          }
         },
         unit_amount: item.price * 100,
       },
       quantity: 1,
     }));
+
+    const getMetadata = (items: Product[]) => {
+      let metadata: { [key: string]: string; } = {};
+
+      items.map((item) => {
+       metadata[item._id] = urlFor(item.image[0]).url()
+      })
+
+      metadata.email = req.body.email
+
+      return metadata
+    }
 
     try {
       // Create Checkout Sessions from body params
@@ -39,10 +55,7 @@ export default async function handler(
         mode: "payment",
         success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/checkout`,
-        metadata: {
-          images: JSON.stringify(items.map((item) => item.image[0])),
-          email: req.body.email
-        },
+        metadata: getMetadata(items)
       };
       const checkoutSession: Stripe.Checkout.Session =
         await stripe.checkout.sessions.create(params);

@@ -2,6 +2,7 @@ import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
 import { ShoppingCartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -22,7 +23,7 @@ function Product({ product }: Props) {
   };
 
   return (
-    <>
+    <Link href={`/product/${product.slug.current}`}>
       <div
         className="md:p-10` flex h-fit w-[320px] select-none flex-col space-y-3 
       rounded-xl bg-[#ffffff] p-8 md:h-[500px] md:w-[400px]"
@@ -57,7 +58,7 @@ function Product({ product }: Props) {
           </div>
         </div>
       </div>
-    </>
+    </Link>
   );
 }
 
