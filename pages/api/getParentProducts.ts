@@ -4,26 +4,26 @@ import { groq } from "next-sanity";
 import { sanityClient } from "../../sanity"
 
 const query = groq`
-*[_type == "product"]{
+*[_type == "parentProduct"]{
     _id,
     category,
     image,
-    color,
-    parentProduct,
     price,
     slug,
     title,
     quantity,
+    childProduct,
+    description,
   }`;
 
 type Data = {
-  products: Product[]
+  parentProducts: ParentProduct[]
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const products = await sanityClient.fetch(query)
-  res.status(200).json({products})
+  const parentProducts = await sanityClient.fetch(query)
+  res.status(200).json({parentProducts})
 }

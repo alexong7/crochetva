@@ -4,22 +4,34 @@ import { Tab } from "@headlessui/react";
 
 type Props = {
   categories: Category[];
+  parentProducts: ParentProduct[];
   products: Product[];
 };
 
-function ProductPanel({ categories, products }: Props) {
+function ProductPanel({ categories, parentProducts, products }: Props) {
   const showProducts = (category: number) => {
-    let filteredProducts = products;
+    let filteredProducts = parentProducts;
+    let alreadyShownProducts = new Set();
 
     if (category != Categories.All_Products) {
-      filteredProducts = products.filter(
+      filteredProducts = parentProducts.filter(
         (product) => product.category._ref === categories[category]._id,
       );
     }
 
-    return filteredProducts.map((product) => (
-      <Product product={product} key={product._id} />
-    ));
+    return filteredProducts.map((product) => {
+      let filteredName = product.title.split("(");
+      if (!alreadyShownProducts.has(filteredName[0])) {
+        alreadyShownProducts.add(filteredName[0]);
+        return (
+          <Product
+            product={product}
+            key={product._id}
+            childProducts={products}
+          />
+        );
+      }
+    });
   };
 
   return (

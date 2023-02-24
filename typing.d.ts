@@ -21,7 +21,13 @@ interface Product{
         _type: "slug"
         current: string
     }
+    parentProduct: {
+        _type: "reference"
+        _ref: string
+    }
     title: string
+    color: string
+    productFamily: string
     image: Image[]
     category: {
         _type: "reference"
@@ -30,6 +36,31 @@ interface Product{
     description: string
     price: number
     quantity: number
+}
+
+interface ParentProduct{
+    _id: string;
+    _createdAt: string
+    _updatedAt: string
+    _rev: string;
+    _type: "parentProduct"
+    slug: {
+        _type: "slug"
+        current: string
+    }
+    title: string
+    image: Image[]
+    category: {
+        _type: "reference"
+        _ref: string
+    }
+    childProduct: {
+        _type: "reference"
+        _ref: string
+    }
+    price: number
+    quantity: number
+    description
 }
 
 interface StripeProduct{

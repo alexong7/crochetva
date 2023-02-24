@@ -9,14 +9,16 @@ import { fetchProducts } from "@/utils/fetchProducts";
 import { getSession } from "next-auth/react";
 import Basket from "@/components/Basket";
 import type { Session } from "next-auth";
+import { fetchParentProducts } from "@/utils/fetchParentProducts";
 
 interface Props {
   categories: Category[];
+  parentProducts: ParentProduct[];
   products: Product[];
   session: Session | null;
 }
 
-export default function Home({ categories, products }: Props) {
+export default function Home({ categories, parentProducts, products }: Props) {
   return (
     <div>
       <Head>
@@ -34,7 +36,11 @@ export default function Home({ categories, products }: Props) {
         <Landing />
       </main>
       <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#fcf4f4]">
-        <ProductPanel categories={categories} products={products} />
+        <ProductPanel
+          categories={categories}
+          parentProducts={parentProducts}
+          products={products}
+        />
       </section>
     </div>
   );
@@ -45,12 +51,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context,
 ) => {
   const categories = await fetchCategories();
+  const parentProducts = await fetchParentProducts();
   const products = await fetchProducts();
   const session = await getSession(context);
 
   return {
     props: {
       categories,
+      parentProducts,
       products,
       session,
     },

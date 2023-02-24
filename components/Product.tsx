@@ -8,16 +8,20 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
 type Props = {
-  product: Product;
+  product: ParentProduct;
+  childProducts: Product[];
 };
 
-function Product({ product }: Props) {
+function Product({ product, childProducts }: Props) {
   const dispatch = useDispatch();
 
   const addItemToBasket = () => {
-    dispatch(addToBasket(product));
+    let childProduct = childProducts.find(
+      (x) => x._id === product.childProduct._ref,
+    );
+    dispatch(addToBasket(childProduct!));
 
-    toast.success(`${product.title} added to basket`, {
+    toast.success(`${childProduct?.title} added to basket`, {
       position: "bottom-center",
     });
   };
@@ -46,9 +50,13 @@ function Product({ product }: Props) {
           </div>
 
           <div
-            className="gradient flex h-12 w-12 flex-shrink-0 cursor-pointer
+            className="gradient z-50 flex h-12 w-12 flex-shrink-0 cursor-pointer
           items-center justify-center rounded-full md:h-[70px] md:w-[70px]"
-            onClick={product.quantity == 0 ? () => {} : addItemToBasket}
+            onClick={(e) => {
+              product.quantity == 0 ? () => {} : addItemToBasket();
+              e.stopPropagation();
+              e.nativeEvent.preventDefault();
+            }}
           >
             {product.quantity == 0 ? (
               <XCircleIcon className="h-10 w-10 text-white" />

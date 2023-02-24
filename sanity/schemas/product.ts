@@ -9,6 +9,17 @@ export default {
       type: "string",
     },
     {
+      name: "parentProduct",
+      title: "Parent Product",
+      type: "reference",
+      to: [{ type: "parentProduct" }],
+    },
+    {
+      name: "color",
+      title: "Color",
+      type: "string",
+    },
+    {
       name: "slug",
       title: "Slug",
       type: "slug",
