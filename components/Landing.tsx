@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Button from "./Button";
+import Link from "next/link";
 
 function Landing() {
   return (
@@ -19,9 +20,13 @@ function Landing() {
         </h1>
 
         {/* Learn More */}
-        <div className="space-x-8">
-          <Button title="Buy Now" />
-          <a className="link">Learn More</a>
+        <div>
+          <Link href="/products/all">
+            <div className="space-x-8">
+              <Button title="Buy Now" />
+              <a className="link">Learn More</a>
+            </div>
+          </Link>
         </div>
       </div>
 

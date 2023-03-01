@@ -29,7 +29,11 @@ function Header() {
 
       {/* Cateogries */}
       <div className="hidden flex-1 items-center justify-center space-x-8 md:flex">
-        <a className="headerLink">Products</a>
+        <Link href="/products/all">
+          <div>
+            <a className="headerLink">Products</a>
+          </div>
+        </Link>
         <a className="headerLink">About</a>
         <a className="headerLink">Contact</a>
       </div>

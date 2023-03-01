@@ -4,7 +4,7 @@ import { colorVariants } from "@/utils/utils";
 import { ShoppingCartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
@@ -17,12 +17,16 @@ function Product({ product, childProducts }: Props) {
   const dispatch = useDispatch();
 
   const addItemToBasket = () => {
-    let childProduct = childProducts.find(
-      (x) => x._id === product.childProduct._ref,
-    );
-    dispatch(addToBasket(childProduct!));
+    if (currentSelectedProduct == null) {
+      toast.error("Select a Colorway then add to bag!", {
+        position: "bottom-center",
+      });
+      return;
+    }
 
-    toast.success(`${childProduct?.title} added to basket`, {
+    dispatch(addToBasket(currentSelectedProduct!));
+
+    toast.success(`${currentSelectedProduct?.title} added to basket`, {
       position: "bottom-center",
     });
   };
@@ -30,6 +34,13 @@ function Product({ product, childProducts }: Props) {
   const filteredProducts: Product[] = childProducts.filter(
     (x) => x.parentProduct._ref === product?._id,
   );
+
+  const mainChildProduct = childProducts.find(
+    (childProduct) => product.childProduct._ref === childProduct._id,
+  );
+
+  const [currentSelectedProduct, setCurrentSelectedProduct] =
+    useState<Product | null>(null);
 
   return (
     <Link href={`/product/${product.slug.current}`}>
@@ -39,7 +50,9 @@ function Product({ product, childProducts }: Props) {
       >
         <div className="relative h-64 w-full md:h-72">
           <Image
-            src={urlFor(product.image[0]).url()}
+            src={urlFor(
+              currentSelectedProduct?.image[0] || mainChildProduct?.image[0],
+            ).url()}
             alt=""
             layout="fill"
             objectFit="contain"
@@ -49,16 +62,23 @@ function Product({ product, childProducts }: Props) {
         <div className="flex flex-1 items-center justify-between space-x-3">
           <div className="space-y-2 text-xl text-black md:text-2xl">
             <p className="font-medium">{product.title}</p>
-            {product.quantity == 0 && <p>(Out of stock)</p>}
+            {currentSelectedProduct?.quantity == 0 && <p>(Out of stock)</p>}
 
             <p>${product.price}</p>
-            <div className="flex">
+            <div
+              className="flex"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               {filteredProducts.map((product, index) => {
                 return (
                   <div key={product._id}>
                     <label key={product._id}>
                       <input
-                        onClick={() => {}}
+                        onClick={(e) => {
+                          setCurrentSelectedProduct(product);
+                        }}
                         type="radio"
                         name="colorOption"
                         id={product.colorName}
@@ -87,7 +107,7 @@ function Product({ product, childProducts }: Props) {
               e.nativeEvent.preventDefault();
             }}
           >
-            {product.quantity == 0 ? (
+            {currentSelectedProduct?.quantity == 0 ? (
               <XCircleIcon className="h-10 w-10 text-white" />
             ) : (
               <ShoppingCartIcon className="h-5 w-5 text-white" />
