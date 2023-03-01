@@ -1,5 +1,6 @@
 import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
+import { colorVariants } from "@/utils/utils";
 import { ShoppingCartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,6 +27,10 @@ function Product({ product, childProducts }: Props) {
     });
   };
 
+  const filteredProducts: Product[] = childProducts.filter(
+    (x) => x.parentProduct._ref === product?._id,
+  );
+
   return (
     <Link href={`/product/${product.slug.current}`}>
       <div
@@ -43,10 +48,34 @@ function Product({ product, childProducts }: Props) {
 
         <div className="flex flex-1 items-center justify-between space-x-3">
           <div className="space-y-2 text-xl text-black md:text-2xl">
-            <p>{product.title}</p>
+            <p className="font-medium">{product.title}</p>
             {product.quantity == 0 && <p>(Out of stock)</p>}
 
             <p>${product.price}</p>
+            <div className="flex">
+              {filteredProducts.map((product, index) => {
+                return (
+                  <div key={product._id}>
+                    <label key={product._id}>
+                      <input
+                        onClick={() => {}}
+                        type="radio"
+                        name="colorOption"
+                        id={product.colorName}
+                        className=" peer hidden"
+                      />
+                      <div className="border-[1px] border-transparent p-[2px] hover:border-black peer-checked:border-black">
+                        <div
+                          className={`h-6 w-6 ${
+                            colorVariants[product.colorName?.toLowerCase()]
+                          } peer-checked:text-white`}
+                        ></div>
+                      </div>
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div

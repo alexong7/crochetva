@@ -2,10 +2,9 @@ import Button from "@/components/Button";
 import Header from "@/components/Header";
 import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
-import product from "@/sanity/schemas/product";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { USDollar } from "@/utils/utils";
+import { colorVariants, USDollar } from "@/utils/utils";
 import { PortableText } from "@portabletext/react";
 import Head from "next/head";
 import Image from "next/image";
@@ -14,6 +13,11 @@ import { GetServerSideProps } from "next/types";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
+import Tooltip from "@mui/material/Tooltip";
+import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
+import ReactImageGallery from "react-image-gallery";
+
+import "react-image-gallery/styles/css/image-gallery.css";
 
 interface Props {
   products: Product[];
@@ -41,7 +45,7 @@ function ProductScreen({ products, parentProducts }: Props) {
 
   const addItemToBasket = (product: Product | null) => {
     if (product == null) {
-      toast.error("Select a Colorway then add to cart!", {
+      toast.error("Select a Colorway then add to bag!", {
         position: "bottom-center",
       });
       return;
@@ -54,7 +58,7 @@ function ProductScreen({ products, parentProducts }: Props) {
   };
 
   const getButtonTitle: () => string = () => {
-    return currentProductQuantity <= 0 ? "Out of Stock" : "Add to Cart";
+    return currentProductQuantity <= 0 ? "Out of Stock" : "Add to Bag";
   };
 
   const getProductPrice = () => {
@@ -65,6 +69,23 @@ function ProductScreen({ products, parentProducts }: Props) {
     return currentSelectedProduct.price;
   };
 
+  childProducts.reverse();
+
+  const imageUrls: string[] = [];
+
+  childProducts.forEach((product) => {
+    product.image.forEach((image) => imageUrls.push(urlFor(image).url()));
+  });
+
+  const images: ReactImageGalleryItem[] = imageUrls.map((image) => {
+    const imageGalleryItem = {} as ReactImageGalleryItem;
+
+    imageGalleryItem.original = urlFor(image).url();
+    imageGalleryItem.thumbnail = urlFor(image).url();
+
+    return imageGalleryItem;
+  });
+
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -74,22 +95,17 @@ function ProductScreen({ products, parentProducts }: Props) {
 
       <Header />
 
-      <main className=" min-h-screen">
+      <main className="">
         {/* Divider div */}
         <div className="mx-4 divide-y divide-gray-300 lg:mt-4">
           {/* Product Image, Info and Options */}
-          <div className="mx-4 mt-6 flex flex-col  sm:flex-row">
-            <div className="flex justify-center">
-              <div className="lg:w- relative h-[400px] w-[300px] sm:h-[500px] sm:w-[400px]">
-                <Image
-                  src={urlFor(parentProduct?.image[0]).url()}
-                  alt=""
-                  objectFit=""
-                  layout="fill"
-                />
-              </div>
-            </div>
-
+          <div className="mx-4 mt-4 flex flex-col sm:flex-row">
+            <ImageGallery
+              items={images}
+              useBrowserFullscreen={false}
+              showPlayButton={false}
+              showFullscreenButton={false}
+            />
             {/* Product Title, price, colorways */}
             <div className="mt-6 flex-1  sm:ml-6  sm:mr-0 ">
               <div>
@@ -100,38 +116,44 @@ function ProductScreen({ products, parentProducts }: Props) {
                   {USDollar.format(getProductPrice()!)}
                 </p>
                 <p className="mt-3 text-sm text-gray-500 sm:text-base">
-                  Colorways
+                  Colorway: {currentSelectedProduct?.colorName}
                 </p>
               </div>
 
               {/* Rendered Colorway Variants */}
-              <div className="mt-2 flex">
-                {childProducts.map((product) => (
-                  <div key={product._id}>
-                    <label key={product._id}>
-                      <input
-                        onClick={() => {
-                          setCurrentSelectedProduct(product);
-                          setCurrentProductQuantity(product.quantity);
-                          console.log(product.title);
-                          console.log(currentProductQuantity);
-                        }}
-                        type="radio"
-                        name="colorOption"
-                        id={product.color}
-                        className=" peer hidden "
-                      />
-                      <div
-                        className={`mr-6 rounded-md border-[1px] border-black px-4 peer-checked:bg-black peer-checked:text-white`}
-                      >
-                        {product.color}
+              <div className="mt-2 flex space-x-4">
+                {childProducts.map((product, index) => {
+                  return (
+                    <Tooltip title={product.colorName} arrow key={index}>
+                      <div key={product._id}>
+                        <label key={product._id}>
+                          <input
+                            onClick={() => {
+                              setCurrentSelectedProduct(product);
+                              setCurrentProductQuantity(product.quantity);
+                              console.log(product.title);
+                              console.log(currentProductQuantity);
+                            }}
+                            type="radio"
+                            name="colorOption"
+                            id={product.colorName}
+                            className=" peer hidden"
+                          />
+                          <div className="border-[1px] border-transparent p-[2px] hover:border-black peer-checked:border-black">
+                            <div
+                              className={`h-10 w-10  ${
+                                colorVariants[product.colorName.toLowerCase()]
+                              }  peer-checked:text-white`}
+                            ></div>
+                          </div>
+                        </label>
                       </div>
-                    </label>
-                  </div>
-                ))}
+                    </Tooltip>
+                  );
+                })}
               </div>
 
-              {/* Add to cart */}
+              {/* Add to bag */}
               <div className="mt-6 max-w-full ">
                 <Button
                   title={getButtonTitle()}
@@ -145,19 +167,21 @@ function ProductScreen({ products, parentProducts }: Props) {
                 />
               </div>
 
-              {/* Product Description */}
-              <div className="flex flex-col items-start justify-center">
-                <div className="mx-6 py-8">
-                  <PortableText value={parentProduct?.description} />
+              <div className="divide-y divide-gray-300">
+                {/* Product Description */}
+                <div className="flex flex-col items-start justify-center">
+                  <div className="mx-6 py-8 md:text-lg">
+                    <PortableText value={parentProduct?.description} />
+                  </div>
                 </div>
+
+                {/* Shipping FAQ Section
+                <div className="flex flex-col items-center justify-center lg:mt-6">
+                  <p className="mt-4 text-2xl font-semibold">Shipping FAQ</p>
+                  <p>Dummy text</p>
+                </div> */}
               </div>
             </div>
-          </div>
-
-          {/* Shipping FAQ Section */}
-          <div className="flex flex-col items-center justify-center lg:mt-6">
-            <p className="mt-4 text-2xl font-semibold">Shipping FAQ</p>
-            <p>Dummy text</p>
           </div>
         </div>
       </main>

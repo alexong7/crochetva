@@ -28,3 +28,8 @@ export const USDollar = Intl.NumberFormat("en-US", {
       throw err;
     }
   }
+
+  export const colorVariants: { [key: string]: string } = {
+    blue: "bg-blue-200",
+    pink: "bg-pink-400",
+  };

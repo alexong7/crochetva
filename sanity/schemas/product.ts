@@ -15,8 +15,13 @@ export default {
       to: [{ type: "parentProduct" }],
     },
     {
-      name: "color",
-      title: "Color",
+      name: "colorName",
+      title: "Color Name",
+      type: "string",
+    },
+    {
+      name: "colorHex",
+      title: "Color Hex",
       type: "string",
     },
     {

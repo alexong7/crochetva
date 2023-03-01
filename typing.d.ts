@@ -26,7 +26,8 @@ interface Product{
         _ref: string
     }
     title: string
-    color: string
+    colorName: string
+    colorHex: string
     productFamily: string
     image: Image[]
     category: {
