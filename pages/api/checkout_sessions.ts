@@ -21,10 +21,6 @@ export default async function handler(
         product_data: {
           name: item.title,
           images: [urlFor(item.image[0]).url()],
-          metadata: {
-            image: urlFor(item.image[0]).url(),
-            sanityProductID: item._id
-          }
         },
         unit_amount: item.price * 100,
       },
@@ -51,8 +47,18 @@ export default async function handler(
 
     const createOrder = async () => {
     
-      let products: string[] = []
-      items.map(item => products.push(item.title))
+      let products: {_key: string, _ref: string, _type: string }[] = []
+
+      items.map((item, index) => {
+        let referenceObject = { 
+          _key: index.toString(),
+          _ref: item._id,
+          _type:'reference',
+        }
+      
+        products.push(referenceObject)
+      })
+
     
       // New Document to be posted to the Orders Collection
       const mutations = [

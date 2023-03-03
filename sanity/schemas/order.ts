@@ -22,7 +22,14 @@ export default {
         name: "products",
         title: "Products",
         type: "array",
-        of: [{ type: "string" }],
+        of: [
+        { 
+          type: "reference" ,
+          to: [
+            {type: 'product'},
+          ]
+        }
+    ],
       },
       {
         name: "images",
