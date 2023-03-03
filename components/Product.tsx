@@ -43,7 +43,7 @@ function Product({ product, childProducts }: Props) {
     useState<Product | null>(null);
 
   return (
-    <Link href={`/product/${product.slug.current}`}>
+    <Link href={`/products/${product.slug.current}`}>
       <div
         className="md:p-10` flex h-fit w-[320px] select-none flex-col space-y-3 
       rounded-xl bg-[#ffffff] p-8 md:h-[500px] md:w-[400px]"
@@ -86,10 +86,9 @@ function Product({ product, childProducts }: Props) {
                       />
                       <div className="border-[1px] border-transparent p-[2px] hover:border-black peer-checked:border-black">
                         <div
-                          className={`h-6 w-6 ${
-                            colorVariants[product.colorName?.toLowerCase()]
-                          } peer-checked:text-white`}
-                        ></div>
+                          className={`h-6 w-6  peer-checked:text-white`}
+                          style={{ backgroundColor: product.colorHex }}
+                        />
                       </div>
                     </label>
                   </div>

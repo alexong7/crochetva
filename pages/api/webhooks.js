@@ -1,61 +1,31 @@
-// const saveTitle = async (title) => {
-//   const mutations = [
-//     {
-//       create: {
-//         _id: "123",
-//         _type: "article",
-//         title: title,
-//       },
-//     },
-//   ];
-
-//   const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
-
-//   const response = await fetch(url, {
-//     method: "post",
-//     headers: {
-//       "Content-type": "application/json",
-//       Authorization: `Bearer ${process.env.NEXT_PUBLIC_TOKEN}`,
-//     },
-//     body: JSON.stringify({ mutations }),
-//   });
-//   const result = await response.json();
-// };
-
 import { buffer } from "micro";
 import Stripe from "stripe";
 
 const fufillOrder = async (session) => {
   console.log("fulfilling order");
 
-  let images = new Set();
+  console.log("session metadata", session.metadata);
 
-  for (const [key, value] of Object.entries(session.metadata)) {
-    console.log(`${key}: ${value}`);
-    if (key.includes("image")) {
-      images.add(value);
-    }
-  }
-
-  console.log("images", images);
-
-  // New Document to be posted to the Orders Collection
+  // Update the Order with the matching Order ID with the success
+  // fields
   const mutations = [
     {
-      create: {
-        _id: session.id,
-        _type: "order",
-        payment_number: session.payment_intent,
-        amount: session.amount_total / 100,
-        images: Array.from(images),
-        email: session.metadata.email,
+      patch: {
+        query: `*[_type == 'order' && order_number == '${session.metadata.orderNumber}']`,
+        set: {
+          payment_number: session.payment_intent,
+          amount: session.amount_total / 100,
+          images: Array.from(images),
+          email: session.metadata.email,
+          completedOrder: true,
+        },
       },
     },
   ];
 
   const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
 
-  const response = await fetch(url, {
+  await fetch(url, {
     method: "post",
     headers: {
       "Content-type": "application/json",
@@ -63,9 +33,8 @@ const fufillOrder = async (session) => {
     },
     body: JSON.stringify({ mutations }),
   });
-  const result = await response.json();
 
-  console.log(`Order ${session.id} has been saved to the db`);
+  console.log(`Order ${session.metadata.orderNumber} has been saved to the db`);
 };
 
 export default async function handler(req, res) {
@@ -89,7 +58,6 @@ export default async function handler(req, res) {
 
     if (event?.type === "checkout.session.completed") {
       const session = event?.data?.object;
-      console.log("event", event);
 
       // Fufill order
       return fufillOrder(session)

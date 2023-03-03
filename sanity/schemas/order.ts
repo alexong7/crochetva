@@ -3,15 +3,26 @@ export default {
     title: "Order",
     type: "document",
     fields: [
-        {
+      {
+        name: "order_number",
+        title: "Order Number",
+        type: "string",
+      },
+      {
             name: "payment_number",
-            title: "Payment Number",
+            title: "Stripe Payment Number",
             type: "string",
-          },
+      },
       {
         name: "amount",
         title: "Amount",
         type: "number",
+      },
+      {
+        name: "products",
+        title: "Products",
+        type: "array",
+        of: [{ type: "string" }],
       },
       {
         name: "images",
@@ -23,6 +34,11 @@ export default {
         name: "email",
         title: "Email",
         type: "string",
+      },
+      {
+        name: "completedOrder",
+        title: "Completed Order",
+        type: "boolean",
       },
     ],
   };

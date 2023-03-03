@@ -5,6 +5,5 @@ export const fetchParentProducts = async () => {
 
     const data = await res.json()
     const parentProducts: ParentProduct[] = data.parentProducts;
-    console.log(parentProducts[0].description)
     return parentProducts;
 }

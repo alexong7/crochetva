@@ -115,15 +115,13 @@ function Checkout({}: Props) {
                   </div>
 
                   {/* Estimated Tax row */}
-                  <div className="flex justify-between">
+                  <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-x-1 lg:flex-row">
-                      Estiamted tax for:{" "}
-                      <p className="flex cursor-pointer items-end text-blue-500 hover:underline">
-                        Enter zip code
-                        <ChevronDownIcon className="h-6 w-6" />
-                      </p>
+                      Estimated tax:
                     </div>
-                    <p>$ -</p>
+                    <p className="text-sm text-gray-500">
+                      Calculated at next step
+                    </p>
                   </div>
                 </div>
 

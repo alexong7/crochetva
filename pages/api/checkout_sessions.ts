@@ -31,6 +31,9 @@ export default async function handler(
       quantity: 1,
     }));
 
+    const orderid = require('order-id')();
+    let orderId = orderid.generate()
+
     const getMetadata = (items: Product[]) => {
       let metadata: { [key: string]: string; } = {};
 
@@ -40,8 +43,41 @@ export default async function handler(
 
       metadata.email = req.body.email
 
+      metadata.orderNumber = orderId
+      
+      console.log(metadata.orderNumber)
       return metadata
     }
+
+    const createOrder = async () => {
+    
+      let products: string[] = []
+      items.map(item => products.push(item.title))
+    
+      // New Document to be posted to the Orders Collection
+      const mutations = [
+        {
+          create: {
+            _type: "order",
+            order_number: orderId.toString(),
+            products: products,
+            completedOrder: false,
+          },
+        },
+      ];
+    
+      const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
+    
+      await fetch(url, {
+        method: "post",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
+        },
+        body: JSON.stringify({ mutations }),
+      });
+    
+    };
 
     try {
       // Create Checkout Sessions from body params
@@ -55,8 +91,22 @@ export default async function handler(
         mode: "payment",
         success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.headers.origin}/checkout`,
-        metadata: getMetadata(items)
+        metadata: getMetadata(items),
+        shipping_options: [
+          {
+            "shipping_rate_data": {
+              "type": "fixed_amount",
+              "fixed_amount": {"amount": 799, "currency": "usd"},
+              "display_name": "Standard Shipping",
+              "delivery_estimate": {
+                "minimum": {"unit": "business_day", "value": 5},
+                "maximum": {"unit": "business_day", "value": 7},
+              },
+            },
+          },
+        ],
       };
+      createOrder();
       const checkoutSession: Stripe.Checkout.Session =
         await stripe.checkout.sessions.create(params);
 

@@ -10,7 +10,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import Tooltip from "@mui/material/Tooltip";
@@ -86,6 +86,12 @@ function ProductScreen({ products, parentProducts }: Props) {
     return imageGalleryItem;
   });
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -131,8 +137,6 @@ function ProductScreen({ products, parentProducts }: Props) {
                             onClick={() => {
                               setCurrentSelectedProduct(product);
                               setCurrentProductQuantity(product.quantity);
-                              console.log(product.title);
-                              console.log(currentProductQuantity);
                             }}
                             type="radio"
                             name="colorOption"
@@ -141,10 +145,10 @@ function ProductScreen({ products, parentProducts }: Props) {
                           />
                           <div className="border-[1px] border-transparent p-[2px] hover:border-black peer-checked:border-black">
                             <div
-                              className={`h-10 w-10  ${
-                                colorVariants[product.colorName.toLowerCase()]
-                              }  peer-checked:text-white`}
-                            ></div>
+                              className={`h-10 w-10 
+                                peer-checked:text-white`}
+                              style={{ backgroundColor: product.colorHex }}
+                            />
                           </div>
                         </label>
                       </div>

@@ -10,6 +10,7 @@ import { getSession } from "next-auth/react";
 import Basket from "@/components/Basket";
 import type { Session } from "next-auth";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
+import { useEffect, useState } from "react";
 
 interface Props {
   categories: Category[];
@@ -19,6 +20,12 @@ interface Props {
 }
 
 export default function Home({ categories, parentProducts, products }: Props) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
   return (
     <div>
       <Head>
