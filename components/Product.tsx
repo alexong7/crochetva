@@ -62,9 +62,13 @@ function Product({ product, childProducts }: Props) {
         <div className="flex flex-1 items-center justify-between space-x-3">
           <div className="space-y-2 text-xl text-black md:text-2xl">
             <p className="font-medium">{product.title}</p>
-            {currentSelectedProduct?.quantity == 0 && <p>(Out of stock)</p>}
+            {currentSelectedProduct != null &&
+              (currentSelectedProduct?.quantity! <= 0 ||
+                currentSelectedProduct?.quantity == null) && (
+                <p className="text-[16px] text-gray-600">(Out of stock)</p>
+              )}
 
-            <p>${product.price}</p>
+            <p>${currentSelectedProduct?.price || mainChildProduct?.price}</p>
             <div
               className="flex"
               onClick={(e) => {
@@ -101,12 +105,18 @@ function Product({ product, childProducts }: Props) {
             className="gradient z-50 flex h-12 w-12 flex-shrink-0 cursor-pointer
           items-center justify-center rounded-full md:h-[70px] md:w-[70px]"
             onClick={(e) => {
-              product.quantity == 0 ? () => {} : addItemToBasket();
+              currentSelectedProduct != null &&
+              (currentSelectedProduct?.quantity! <= 0 ||
+                currentSelectedProduct?.quantity == null)
+                ? () => {}
+                : addItemToBasket();
               e.stopPropagation();
               e.nativeEvent.preventDefault();
             }}
           >
-            {currentSelectedProduct?.quantity == 0 ? (
+            {currentSelectedProduct != null &&
+            (currentSelectedProduct?.quantity! <= 0 ||
+              currentSelectedProduct?.quantity == null) ? (
               <XCircleIcon className="h-10 w-10 text-white" />
             ) : (
               <ShoppingCartIcon className="h-5 w-5 text-white" />

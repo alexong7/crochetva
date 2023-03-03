@@ -18,6 +18,7 @@ import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import ReactImageGallery from "react-image-gallery";
 
 import "react-image-gallery/styles/css/image-gallery.css";
+import Basket from "@/components/Basket";
 
 interface Props {
   products: Product[];

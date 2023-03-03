@@ -1,10 +1,14 @@
 import { buffer } from "micro";
+import { fetchOrder } from "@/utils/fetchOrder";
+
 import Stripe from "stripe";
 
 const fufillOrder = async (session) => {
   console.log("fulfilling order");
 
   console.log("session metadata", session.metadata);
+
+  const order = await fetchOrder(session.metadata.orderNumber);
 
   // Update the Order with the matching Order ID with the success
   // fields
@@ -37,6 +41,32 @@ const fufillOrder = async (session) => {
   console.log(`Order ${session.metadata.orderNumber} has been saved to the db`);
 };
 
+const decrementQuantity = async (product) => {
+  // Update the Order with the matching Order ID with the success
+  // fields
+  const mutations = [
+    {
+      patch: {
+        query: `*[_type == 'product' && _id == '${product["_ref"]}']`,
+        dec: {
+          quantity: 1,
+        },
+      },
+    },
+  ];
+
+  const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
+
+  await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
+    },
+    body: JSON.stringify({ mutations }),
+  });
+};
+
 export default async function handler(req, res) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -58,6 +88,13 @@ export default async function handler(req, res) {
 
     if (event?.type === "checkout.session.completed") {
       const session = event?.data?.object;
+      const order = await fetchOrder(session.metadata.orderNumber);
+
+      console.log("Order", order);
+
+      order.products.map((product) => {
+        decrementQuantity(product);
+      });
 
       // Fufill order
       return fufillOrder(session)
