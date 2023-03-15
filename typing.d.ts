@@ -86,6 +86,9 @@ interface Order {
   _type: "order";
   completedOrder: boolean;
   order_number: string;
+  amount: number;
+  shipping_carrier: string;
+  tracking_number: string;
   products: [
     {
       _type: "reference";

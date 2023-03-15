@@ -32,7 +32,9 @@ function Header() {
         <Link href="/products/all" className="headerLink">
           Products
         </Link>
-        <a className="headerLink">About</a>
+        <Link href="/about" className="headerLink">
+          About
+        </Link>
         <a className="headerLink">Contact</a>
       </div>
 

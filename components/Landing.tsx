@@ -21,12 +21,14 @@ function Landing() {
 
         {/* Learn More */}
         <div>
-          <Link href="/products/all">
-            <div className="space-x-8">
+          <div className="space-x-8">
+            <Link href="/products/all">
               <Button title="Buy Now" />
-              <a className="link">Learn More</a>
-            </div>
-          </Link>
+            </Link>
+            <Link href="/about" className="link">
+              Learn More
+            </Link>
+          </div>
         </div>
       </div>
 

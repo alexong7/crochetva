@@ -1,5 +1,4 @@
 import Button from "@/components/Button";
-import { fetchLineItems } from "@/utils/fetchLineItems";
 import { USDollar } from "@/utils/utils";
 import {
   CheckIcon,
@@ -17,23 +16,21 @@ import { useMediaQuery } from "react-responsive";
 import { useSession } from "next-auth/react";
 import { fetchProducts } from "@/utils/fetchProducts";
 import { urlFor } from "@/sanity";
-import product from "@/sanity/schemas/product";
+import Stripe from "stripe";
+import { fetchOrder } from "@/utils/fetchOrder";
 
 interface Props {
-  lineItems: StripeProduct[];
   products: Product[];
+  order: Order;
+  checkoutSession: Stripe.Response<Stripe.Checkout.Session>;
 }
 
-function Success({ lineItems, products }: Props) {
+function Success({ products, order, checkoutSession }: Props) {
   const router = useRouter();
   const { session_id } = router.query;
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
-  const subtotal = lineItems.reduce(
-    (acc, product) => acc + product.price.unit_amount / 100,
-    0,
-  );
 
   useEffect(() => setMounted(true), []);
 
@@ -44,20 +41,16 @@ function Success({ lineItems, products }: Props) {
     setShowOrderSummary(!showOrderSummary);
   };
 
-  // Make a map of product titles to product image url
-  const productToImage: { [key: string]: string } = {};
-  products.map(
-    (product) =>
-      (productToImage[product.title] = urlFor(product.image[0]).url()),
-  );
+  let filteredProducts: Product[] = [];
 
-  const getImageForLineItem = (productDescription: string) => {
-    if (productDescription == null || !(productDescription in productToImage)) {
-      return defaultImage;
-    }
+  order.products.map((refProduct) => {
+    let foundProduct = products.find(
+      (product) => product._id == refProduct._ref,
+    );
+    filteredProducts.push(foundProduct!);
+  });
 
-    return productToImage[productDescription];
-  };
+  console.log("filtred Products", filteredProducts);
 
   return (
     <div>
@@ -101,7 +94,7 @@ function Success({ lineItems, products }: Props) {
             </div>
             <div>
               <p className="text-sm text-gray-600">
-                Order #{session_id?.slice(-5)}
+                Order #{order?.order_number || "DEFAULT"}
               </p>
               <h4 className="text-lg">
                 Thank you{" "}
@@ -115,21 +108,23 @@ function Success({ lineItems, products }: Props) {
               <p>Your order is confirmed</p>
               <p className="text-sm text-gray-600">
                 We&apos;ve accepted your order, and we&apos;re getting it ready.
-                Come back to this page for updates on your shipment status.
               </p>
             </div>
             <div className="pt-3 text-sm">
               <p className="font-medium text-gray-600">
                 Order Tracking Number:
               </p>
-              <p>CJDLF19284</p>
+              <p className=" text-gray-600">
+                {order.tracking_number ||
+                  `We're getting your order ready. Check back later for tracking details.`}
+              </p>
             </div>
           </div>
 
           <div className="my-4 mx-4 space-y-2 rounded-md border border-gray-300 p-4 lg:ml-14">
             <p>Order updates</p>
             <p className="text-sm text-gray-600">
-              You&apos;ll get shipping and delivery updates by email and text.
+              You&apos;ll get shipping and delivery updates by email.
             </p>
           </div>
 
@@ -171,7 +166,7 @@ function Success({ lineItems, products }: Props) {
                 </button>
 
                 <p className="text-xl font-medium text-black">
-                  {USDollar.format(subtotal + 5)}
+                  {USDollar.format(order.amount)}
                 </p>
               </div>
             </div>
@@ -180,30 +175,27 @@ function Success({ lineItems, products }: Props) {
             {showOrderSummaryCondition && (
               <div className="mx-auto max-w-xl divide-y border-gray-300 px-4 py-4 lg:mx-0 lg:max-w-lg lg:px-10 lg:py-16">
                 <div className="space-y-4 pb-4">
-                  {lineItems.map((product) => (
+                  {filteredProducts.map((product, index) => (
                     // Main row container
                     <div
-                      key={product.id}
+                      key={index}
                       className="flex items-center space-x-4 text-sm font-medium"
                     >
                       {/* Image Box + Quantity */}
-                      <div className="relative flex h-16 w-16 items-center justify-center rounded-md border border-gray-300 bg-[#F1F1F1] text-xs text-white">
-                        <div className="relative h-7 w-7 animate-bounce rounded-md">
+                      <div className="relative flex h-16 w-16 items-center justify-center text-xs text-white">
+                        <div className="fit h-16 w-16  rounded-md">
                           <Image
-                            src={getImageForLineItem(product.description)}
+                            src={urlFor(product.image[0]).url()}
                             layout="fill"
                             objectFit="contain"
                             alt=""
                           />
                         </div>
-                        <div className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[gray] text-xs">
-                          {product.quantity}
-                        </div>
                       </div>
 
                       {/*  Item Title & Price */}
-                      <p className="flex-1">{product.description}</p>
-                      <p>{USDollar.format(product.price.unit_amount / 100)}</p>
+                      <p className="flex-1">{product.title}</p>
+                      <p>{USDollar.format(product.price)}</p>
                     </div>
                   ))}
                 </div>
@@ -213,13 +205,19 @@ function Success({ lineItems, products }: Props) {
                   {/* Subtotal */}
                   <div className="flex justify-between text-sm">
                     <p className="text-[gray]">Subtotal</p>
-                    <p className="font-medium">{USDollar.format(subtotal)}</p>
+                    <p className="font-medium">
+                      {USDollar.format(checkoutSession?.amount_subtotal! / 100)}
+                    </p>
                   </div>
 
                   {/* Shipping */}
                   <div className="flex justify-between text-sm">
                     <p className="text-[gray]">Shipping</p>
-                    <p className="font-medium">{USDollar.format(5)}</p>
+                    <p className="font-medium">
+                      {USDollar.format(
+                        checkoutSession?.shipping_cost?.amount_subtotal! / 100,
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -229,7 +227,7 @@ function Success({ lineItems, products }: Props) {
                   <p className="flex items-center gap-x-4 text-xs text-[gray]">
                     USD
                     <span className="text-xl font-medium text-black">
-                      {USDollar.format(subtotal + 5)}
+                      {USDollar.format(order.amount)}
                     </span>
                   </p>
                 </div>
@@ -251,13 +249,27 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
 }) => {
   const sessionId = query.session_id as string;
-  const lineItems = await fetchLineItems(sessionId);
   const products = await fetchProducts();
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    // https://github.com/stripe/stripe-node#configuration
+    apiVersion: "2022-11-15",
+  });
+
+  const checkoutSession = await stripe.checkout.sessions.retrieve(
+    sessionId?.toString()!,
+  );
+  console.log("checkout session", checkoutSession);
+
+  const orderNumber = checkoutSession.metadata?.orderNumber;
+
+  const order = await fetchOrder(orderNumber!);
 
   return {
     props: {
-      lineItems,
       products,
+      order,
+      checkoutSession,
     },
   };
 };

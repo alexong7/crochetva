@@ -1,70 +1,54 @@
 import { buffer } from "micro";
 import { fetchOrder } from "@/utils/fetchOrder";
+import { sanityClient } from "../../sanity";
 
 import Stripe from "stripe";
 
-const fufillOrder = async (session) => {
+const fufillOrder = async (session, order) => {
   console.log("fulfilling order");
 
   console.log("session metadata", session.metadata);
 
-  const order = await fetchOrder(session.metadata.orderNumber);
+  const docId = order._id;
+  console.log("fufillOrder docId", docId);
 
-  // Update the Order with the matching Order ID with the success
-  // fields
-  const mutations = [
-    {
-      patch: {
-        query: `*[_type == 'order' && order_number == '${session.metadata.orderNumber}']`,
-        set: {
-          payment_number: session.payment_intent,
-          amount: session.amount_total / 100,
-          images: Array.from(images),
-          email: session.metadata.email,
-          completedOrder: true,
-        },
-      },
-    },
-  ];
-
-  const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
-
-  await fetch(url, {
-    method: "post",
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
-    },
-    body: JSON.stringify({ mutations }),
-  });
-
-  console.log(`Order ${session.metadata.orderNumber} has been saved to the db`);
+  // Perform an Update based on the docID for the given Order
+  sanityClient
+    .patch(docId)
+    .set({
+      payment_number: session.payment_intent,
+      amount: session.amount_total / 100,
+      email: session.metadata.email,
+      completedOrder: true,
+    })
+    .commit()
+    .then((updatedOrder) => {
+      console.log("Order sucessfully fufilled!");
+    })
+    .catch((err) => {
+      console.error("Oh no, the update failed: ", err.message);
+    });
 };
 
 const decrementQuantity = async (product) => {
-  // Update the Order with the matching Order ID with the success
-  // fields
-  const mutations = [
-    {
-      patch: {
-        query: `*[_type == 'product' && _id == '${product["_ref"]}']`,
-        dec: {
-          quantity: 1,
-        },
-      },
-    },
-  ];
+  console.log("Decrementing Product Quantity");
 
-  const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
+  const productId = product._ref;
+  console.log("productID", productId);
 
-  await fetch(url, {
-    method: "post",
-    headers: {
-      "Content-type": "application/json",
-      Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
-    },
-    body: JSON.stringify({ mutations }),
-  });
+  // Perform a patch to decrement the product quantity by 1
+  sanityClient
+    .patch(productId)
+    .dec({
+      quantity: 1,
+    })
+    .commit()
+    .then((updatedOrder) => {
+      console.log("Decremented product!");
+    })
+    .catch((err) => {
+      console.error("Oh no, the decrement update failed: ", err.message);
+    });
 };
 
 export default async function handler(req, res) {
@@ -92,14 +76,18 @@ export default async function handler(req, res) {
 
       console.log("Order", order);
 
-      order.products.map((product) => {
-        decrementQuantity(product);
-      });
+      await Promise.all(
+        order.products.map(async (product) => {
+          await decrementQuantity(product);
+        }),
+      );
 
       // Fufill order
-      return fufillOrder(session)
+      await fufillOrder(session, order)
         .then(() => res.status(200).send)
         .catch((err) => res.status(400).send(`Webhook Error ${err.message}`));
+
+      return;
     }
   }
 }

@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { urlFor } from "../../sanity";
+import { sanityClient } from "../../sanity";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // https://github.com/stripe/stripe-node#configuration
   apiVersion: "2022-11-15",
@@ -9,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method === "POST") {
     const items: Product[] = req.body.items;
@@ -27,39 +28,37 @@ export default async function handler(
       quantity: 1,
     }));
 
-    const orderid = require('order-id')();
-    let orderId = orderid.generate()
+    const orderid = require("order-id")();
+    let orderId = orderid.generate();
 
     const getMetadata = (items: Product[]) => {
-      let metadata: { [key: string]: string; } = {};
+      let metadata: { [key: string]: string } = {};
 
       items.map((item) => {
-       metadata[item._id] = urlFor(item.image[0]).url()
-      })
+        metadata[item._id] = urlFor(item.image[0]).url();
+      });
 
-      metadata.email = req.body.email
+      metadata.email = req.body.email;
 
-      metadata.orderNumber = orderId
-      
-      console.log(metadata.orderNumber)
-      return metadata
-    }
+      metadata.orderNumber = orderId;
+
+      console.log(metadata.orderNumber);
+      return metadata;
+    };
 
     const createOrder = async () => {
-    
-      let products: {_key: string, _ref: string, _type: string }[] = []
+      let products: { _key: string; _ref: string; _type: string }[] = [];
 
       items.map((item, index) => {
-        let referenceObject = { 
+        let referenceObject = {
           _key: index.toString(),
           _ref: item._id,
-          _type:'reference',
-        }
-      
-        products.push(referenceObject)
-      })
+          _type: "reference",
+        };
 
-    
+        products.push(referenceObject);
+      });
+
       // New Document to be posted to the Orders Collection
       const mutations = [
         {
@@ -71,18 +70,33 @@ export default async function handler(
           },
         },
       ];
-    
+
+      const newDoc = {
+        _type: "order",
+        order_number: orderId.toString(),
+        products: products,
+        completedOrder: false,
+      };
+
       const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
-    
-      await fetch(url, {
-        method: "post",
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
-        },
-        body: JSON.stringify({ mutations }),
-      });
-    
+
+      sanityClient
+        .create(newDoc)
+        .then(() => {
+          console.log("document created");
+        })
+        .catch(console.error);
+
+      // const response = await fetch(url, {
+      //   method: "post",
+      //   headers: {
+      //     "Content-type": "application/json",
+      //     Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
+      //   },
+      //   body: JSON.stringify({ mutations }),
+      // });
+
+      // console.log("Create Order Response", response);
     };
 
     try {
@@ -100,13 +114,13 @@ export default async function handler(
         metadata: getMetadata(items),
         shipping_options: [
           {
-            "shipping_rate_data": {
-              "type": "fixed_amount",
-              "fixed_amount": {"amount": 799, "currency": "usd"},
-              "display_name": "Standard Shipping",
-              "delivery_estimate": {
-                "minimum": {"unit": "business_day", "value": 5},
-                "maximum": {"unit": "business_day", "value": 7},
+            shipping_rate_data: {
+              type: "fixed_amount",
+              fixed_amount: { amount: 799, currency: "usd" },
+              display_name: "Standard Shipping",
+              delivery_estimate: {
+                minimum: { unit: "business_day", value: 5 },
+                maximum: { unit: "business_day", value: 7 },
               },
             },
           },
