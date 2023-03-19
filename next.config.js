@@ -8,6 +8,7 @@ const nextConfig = {
       "i.postimg.cc",
       "cdn.sanity.io",
       "lh3.googleusercontent.com",
+      "www.clipartmax.com",
     ],
   },
 };

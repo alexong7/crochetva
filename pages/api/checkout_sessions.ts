@@ -34,10 +34,6 @@ export default async function handler(
     const getMetadata = (items: Product[]) => {
       let metadata: { [key: string]: string } = {};
 
-      items.map((item) => {
-        metadata[item._id] = urlFor(item.image[0]).url();
-      });
-
       metadata.email = req.body.email;
 
       metadata.orderNumber = orderId;
@@ -59,44 +55,19 @@ export default async function handler(
         products.push(referenceObject);
       });
 
-      // New Document to be posted to the Orders Collection
-      const mutations = [
-        {
-          create: {
-            _type: "order",
-            order_number: orderId.toString(),
-            products: products,
-            completedOrder: false,
-          },
-        },
-      ];
-
-      const newDoc = {
+      const newOrder = {
         _type: "order",
         order_number: orderId.toString(),
         products: products,
         completedOrder: false,
       };
 
-      const url = `https://${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/mutate/production`;
-
       sanityClient
-        .create(newDoc)
+        .create(newOrder)
         .then(() => {
-          console.log("document created");
+          console.log("New Order Created");
         })
         .catch(console.error);
-
-      // const response = await fetch(url, {
-      //   method: "post",
-      //   headers: {
-      //     "Content-type": "application/json",
-      //     Authorization: `Bearer ${process.env.SANITY_AUTH_KEY}`,
-      //   },
-      //   body: JSON.stringify({ mutations }),
-      // });
-
-      // console.log("Create Order Response", response);
     };
 
     try {
