@@ -36,6 +36,9 @@ function Header() {
           About
         </Link>
         <a className="headerLink">Contact</a>
+        <Link href="/faq" className="headerLink">
+          FAQ
+        </Link>
       </div>
 
       {/* Right side Icons */}

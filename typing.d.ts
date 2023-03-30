@@ -11,6 +11,27 @@ interface Category {
   title: string;
 }
 
+interface AboutUs {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "about_us";
+  name: string;
+  image: Image;
+  description;
+}
+
+interface FAQ {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "faq";
+  question: string;
+  answer: string;
+}
+
 interface Product {
   _id: string;
   _createdAt: string;

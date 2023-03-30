@@ -1,12 +1,17 @@
 import Header from "@/components/Header";
 import { urlFor } from "@/sanity";
+import { fetchAboutUs } from "@/utils/fetchAboutUs";
+import { PortableText } from "@portabletext/react";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
 
-type Props = {};
+type Props = {
+  aboutUs: AboutUs[];
+};
 
-function About({}: Props) {
+function About({ aboutUs }: Props) {
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -16,15 +21,11 @@ function About({}: Props) {
 
       <Header />
 
-      {/* <main>
-        <div>About Us</div>
-      </main> */}
-
       <div
         className="relative mx-auto flex h-screen max-w-full flex-col items-center
     justify-center overflow-hidden text-left"
       >
-        <h3 className="mt-8 text-xl uppercase tracking-[20px] md:text-4xl ">
+        <h3 className="mt-8 text-xl uppercase tracking-[20px] underline decoration-[#FFCEEE] underline-offset-2 md:text-4xl">
           About Us
         </h3>
 
@@ -32,28 +33,36 @@ function About({}: Props) {
           className="scrollbar-track-gray-400/20 scrollbar-thumb-[#F7AB0A]/90 scrollbar-thin relative z-20 mt-6 flex w-full snap-x snap-mandatory overflow-y-hidden
         overflow-x-scroll md:mt-10"
         >
-          <div
-            className="flex h-screen  w-full snap-center flex-col items-center space-y-6
-         md:mt-10 md:flex-row md:items-start md:justify-center md:space-x-20"
-          >
-            <div className="relative h-[100px] w-[100px] flex-shrink-0 md:mt-20 md:ml-24 md:h-[300px] md:w-[300px] lg:mt-14">
-              <Image src={CY_PNG} layout="fill" objectFit="contain" alt="" />
-            </div>
-            <div className=" px-0">
-              <h4
-                className="text-center text-2xl font-semibold tracking-[5px] underline decoration-[#FFCEEE] 
+          {aboutUs.map((section) => (
+            <div
+              key={section._id}
+              className="flex h-screen w-screen  flex-shrink-0 snap-center flex-col items-center space-y-6
+                md:mt-10 md:flex-row md:items-start md:justify-center md:space-x-20"
+            >
+              <div className="relative h-[150px] w-[150px] md:mt-20 md:ml-24 md:h-[300px] md:w-[300px] lg:mt-14">
+                <Image
+                  src={urlFor(section.image).url()}
+                  layout="fill"
+                  objectFit="contain"
+                  alt=""
+                />
+              </div>
+              <div className=" px-0">
+                <h4
+                  className="text-center text-2xl font-semibold tracking-[5px] underline decoration-[#FFCEEE] 
               md:text-3xl"
-              >
-                Ava
-              </h4>
+                >
+                  {section.name}
+                </h4>
 
-              <div className="mt-4 px-8 md:w-[400px] lg:w-[700px]">
-                <p className="text-[14px] md:text-[16px] lg:text-[17px]">
-                  {blockText}
-                </p>
+                <div className="mt-4 px-8 md:w-[400px] lg:w-[700px]">
+                  <div className="text-[14px] md:text-[16px] lg:text-[17px]">
+                    <PortableText value={section.description} />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
         <div className="absolute top-[30%] left-0 h-[250px] w-full -skew-y-12 bg-[#fcf4f4]/100" />
@@ -64,8 +73,17 @@ function About({}: Props) {
 
 export default About;
 
-const CY_PNG =
-  "https://www.clipartmax.com/png/full/189-1890830_red-bird-clip-art.png";
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const aboutUs: AboutUs[] = await fetchAboutUs();
 
-const blockText =
-  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum";
+  return {
+    props: {
+      aboutUs,
+    },
+    // Next.js will attempt to regenerate the page:
+    // - When a request comes in
+    // - At most once every 10 seconds
+    // This helps with caching the data
+    revalidate: 10,
+  };
+};

@@ -13,7 +13,7 @@ function Landing() {
       <div className="space-y-8">
         <h1 className="space-y-3 text-5xl font-semibold tracking-wide lg:text-6xl xl:text-7xl">
           <span className="gradient block bg-clip-text text-transparent">
-            Handmade
+            Handcrafted
           </span>
           <span className="block">Pals For</span>
           <span className="block">Your Home</span>
