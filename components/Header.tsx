@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  ShoppingBagIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectBasketItems } from "@/redux/basketSlice";
 import { useSession, signIn, signOut } from "next-auth/react";
+import MobileMenu from "./MobileMenu";
 
 function Header() {
   // Track how many items in cart
   const items = useSelector(selectBasketItems);
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 flex w-full items-center justify-between bg-[#FFCEEE] p-4">
@@ -69,6 +75,14 @@ function Header() {
         ) : (
           <UserIcon className="headerIcon" onClick={() => signIn()} />
         )}
+
+        <div>
+          <Bars3Icon
+            className="headerIcon md:hidden"
+            onClick={() => setOpen(true)}
+          />
+          {open && <MobileMenu close={() => setOpen(false)} />}
+        </div>
       </div>
     </header>
   );

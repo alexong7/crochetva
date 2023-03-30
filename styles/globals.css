@@ -40,6 +40,10 @@
   .tabPanel {
     @apply grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3;
   }
+
+  .mobileLink {
+    @apply block py-2 tracking-[4px];
+  }
 }
 
 @media only screen and (max-width: 768px) {
