@@ -35,7 +35,9 @@ function Header() {
         <Link href="/about" className="headerLink">
           About
         </Link>
-        <a className="headerLink">Contact</a>
+        <Link href="/contact" className="headerLink">
+          Contact
+        </Link>
         <Link href="/faq" className="headerLink">
           FAQ
         </Link>

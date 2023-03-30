@@ -25,7 +25,7 @@ export default async function handler(
       await transporter.sendMail({
         from: process.env.EMAIL,
         to: data.email,
-        subject: "Thanks for your order",
+        subject: "Thanks for your order!",
         text: "We've received your order and are working on getting it to your front door.",
         ...generateEmailContent(data),
       });

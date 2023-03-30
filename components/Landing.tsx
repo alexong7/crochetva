@@ -6,7 +6,7 @@ import Link from "next/link";
 function Landing() {
   return (
     <section
-      className="sticky top-0 mx-auto flex h-screen max-w-[1350px] items-center justify-between px-8
+      className="sticky top-0 mx-auto flex h-screen max-w-[1350px] items-center justify-between px-6
         "
     >
       {/* Landing Text */}

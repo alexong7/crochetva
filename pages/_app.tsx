@@ -4,6 +4,7 @@ import { store } from "../redux/store";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
+import { ChakraProvider } from "@chakra-ui/react";
 
 export default function App({
   Component,
@@ -12,8 +13,10 @@ export default function App({
   return (
     <SessionProvider session={session}>
       <Provider store={store}>
-        <Toaster />
-        <Component {...pageProps} />
+        <ChakraProvider>
+          <Toaster />
+          <Component {...pageProps} />
+        </ChakraProvider>
       </Provider>
     </SessionProvider>
   );
