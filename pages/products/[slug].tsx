@@ -4,21 +4,19 @@ import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { colorVariants, USDollar } from "@/utils/utils";
+import { getProductPrice, USDollar } from "@/utils/utils";
 import { PortableText } from "@portabletext/react";
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next/types";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import Tooltip from "@mui/material/Tooltip";
+import { Tooltip } from "@chakra-ui/react";
+
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
-import ReactImageGallery from "react-image-gallery";
 
 import "react-image-gallery/styles/css/image-gallery.css";
-import Basket from "@/components/Basket";
 
 interface Props {
   products: Product[];
@@ -60,14 +58,6 @@ function ProductScreen({ products, parentProducts }: Props) {
 
   const getButtonTitle: () => string = () => {
     return currentProductQuantity <= 0 ? "Out of Stock" : "Add to Bag";
-  };
-
-  const getProductPrice = () => {
-    if (currentSelectedProduct == null) {
-      return parentProduct?.price;
-    }
-
-    return currentSelectedProduct.price;
   };
 
   childProducts.reverse();
@@ -120,7 +110,9 @@ function ProductScreen({ products, parentProducts }: Props) {
                   {parentProduct?.title}
                 </p>
                 <p className="text-xl text-gray-700  sm:text-2xl">
-                  {USDollar.format(getProductPrice()!)}
+                  {currentSelectedProduct == null
+                    ? getProductPrice(childProducts, parentProduct!)
+                    : `$${currentSelectedProduct.price}`}
                 </p>
                 <p className="mt-3 text-sm text-gray-500 sm:text-base">
                   Colorway: {currentSelectedProduct?.colorName}
@@ -131,7 +123,7 @@ function ProductScreen({ products, parentProducts }: Props) {
               <div className="mt-2 flex space-x-4">
                 {childProducts.map((product, index) => {
                   return (
-                    <Tooltip title={product.colorName} arrow key={index}>
+                    <Tooltip label={product.colorName} hasArrow key={index}>
                       <div key={product._id}>
                         <label key={product._id}>
                           <input

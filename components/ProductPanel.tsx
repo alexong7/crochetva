@@ -9,13 +9,29 @@ type Props = {
 };
 
 function ProductPanel({ categories, parentProducts, products }: Props) {
-  const showProducts = (category: number) => {
+  const slugToIndex: { [slug: string]: number } = {};
+
+  // Loop through the categories, pair each slug to the curernt index.
+  // This ensures when we render our categories that we make sure the right
+  // products for the Tab Panel get rendered since the order of the Array
+  // will not be guaranteed
+  for (let i = 0; i < categories.length; i++) {
+    slugToIndex[categories[i].slug.current] = i;
+  }
+
+  const showProducts = (category_slug: string) => {
     let filteredProducts = parentProducts;
     let alreadyShownProducts = new Set();
 
-    if (category != Categories.All_Products) {
+    console.log("categories", categories);
+
+    // If we're not showing All Products, filter
+    // through the parent products based on category.
+    // Else return all parent products to display
+    if (category_slug != ALL_PRODUCTS_SLUG) {
       filteredProducts = parentProducts.filter(
-        (product) => product.category._ref === categories[category]._id,
+        (product) =>
+          product.category._ref === categories[slugToIndex[category_slug]]._id,
       );
     }
 
@@ -42,28 +58,47 @@ function ProductPanel({ categories, parentProducts, products }: Props) {
 
       <Tab.Group>
         <Tab.List className="flex justify-center">
-          {categories.map((category) => (
-            <Tab
-              key={category._id}
-              id={category._id}
-              className={({ selected }) =>
-                `whitespace-nowrap rounded-t-lg py-3 px-5 text-sm font-light outline-none md:py-4 md:px-6 md:text-base ${
-                  selected
-                    ? "gradient border-b-2 border-[#35383C] text-white"
-                    : "border-b-2 border-[#35383C] text-[#747474]"
-                }`
-              }
-            >
-              {category.title}
-            </Tab>
-          ))}
+          {AllProductsTab()}
+          {categories.map((category) => {
+            // Render all tabs besides All Products, that gets manually
+            // rendered first above, always.
+            if (category.slug.current !== ALL_PRODUCTS_SLUG) {
+              return (
+                <Tab
+                  key={category._id}
+                  id={category._id}
+                  className={({ selected }) =>
+                    `whitespace-nowrap rounded-t-lg py-3 px-5 text-sm font-light outline-none md:py-4 md:px-6 md:text-base ${
+                      selected
+                        ? "gradient border-b-2 border-[#35383C] text-white"
+                        : "border-b-2 border-[#35383C] text-[#747474]"
+                    }`
+                  }
+                >
+                  {category.title}
+                </Tab>
+              );
+            }
+          })}
         </Tab.List>
         <Tab.Panels className="mx-auto max-w-fit pt-10 pb-24 sm:px-4">
           <Tab.Panel className="tabPanel">
-            {showProducts(Categories.All_Products)}
+            {showProducts(ALL_PRODUCTS_SLUG)}
           </Tab.Panel>
-          <Tab.Panel className="tabPanel">{showProducts(1)}</Tab.Panel>
+
+          {categories.map((category) => {
+            if (category.slug.current !== ALL_PRODUCTS_SLUG) {
+              return (
+                <Tab.Panel key={category._id} className="tabPanel">
+                  {showProducts(category.slug.current)}
+                </Tab.Panel>
+              );
+            }
+          })}
+
+          {/* <Tab.Panel className="tabPanel">{showProducts(1)}</Tab.Panel>
           <Tab.Panel className="tabPanel">{showProducts(2)}</Tab.Panel>
+          <Tab.Panel className="tabPanel">{showProducts(3)}</Tab.Panel> */}
         </Tab.Panels>
       </Tab.Group>
     </div>
@@ -72,6 +107,20 @@ function ProductPanel({ categories, parentProducts, products }: Props) {
 
 export default ProductPanel;
 
-enum Categories {
-  All_Products,
-}
+const ALL_PRODUCTS_SLUG = "all-products";
+
+const AllProductsTab = () => (
+  <Tab
+    key={"allProducts"}
+    id={"allProductsId"}
+    className={({ selected }) =>
+      `whitespace-nowrap rounded-t-lg py-3 px-5 text-sm font-light outline-none md:py-4 md:px-6 md:text-base ${
+        selected
+          ? "gradient border-b-2 border-[#35383C] text-white"
+          : "border-b-2 border-[#35383C] text-[#747474]"
+      }`
+    }
+  >
+    All Products
+  </Tab>
+);

@@ -55,7 +55,6 @@ interface Product {
     _type: "reference";
     _ref: string;
   };
-  description: string;
   price: number;
   quantity: number;
 }
@@ -81,7 +80,6 @@ interface ParentProduct {
     _ref: string;
   };
   price: number;
-  quantity: number;
   description;
 }
 

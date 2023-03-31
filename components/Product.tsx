@@ -1,6 +1,6 @@
 import { addToBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
-import { colorVariants } from "@/utils/utils";
+import { getProductPrice } from "@/utils/utils";
 import { ShoppingCartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
@@ -68,7 +68,11 @@ function Product({ product, childProducts }: Props) {
                 <p className="text-[16px] text-gray-600">(Out of stock)</p>
               )}
 
-            <p>${currentSelectedProduct?.price || mainChildProduct?.price}</p>
+            <p>
+              {currentSelectedProduct == null
+                ? getProductPrice(filteredProducts, product)
+                : `$${currentSelectedProduct.price}`}
+            </p>
             <div
               className="flex"
               onClick={(e) => {
