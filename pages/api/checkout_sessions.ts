@@ -90,8 +90,8 @@ export default async function handler(
               fixed_amount: { amount: 799, currency: "usd" },
               display_name: "Standard Shipping",
               delivery_estimate: {
-                minimum: { unit: "business_day", value: 5 },
-                maximum: { unit: "business_day", value: 7 },
+                minimum: { unit: "business_day", value: 7 },
+                maximum: { unit: "business_day", value: 10 },
               },
             },
           },

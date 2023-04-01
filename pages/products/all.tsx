@@ -25,7 +25,9 @@ function AllProducts({ products, parentProducts }: Props) {
       <Basket />
 
       <main className="flex flex-col items-center justify-center space-y-6 bg-[#fcf4f4] p-6">
-        <p className="text-4xl font-medium md:text-5xl">All Products</p>
+        <p className="text-4xl font-medium  tracking-[4px] underline decoration-[#FFCEEE] underline-offset-2 md:text-5xl">
+          All Products
+        </p>
         <div className="tabPanel  ">
           {parentProducts.map((product, index) => (
             <Product key={index} product={product} childProducts={products} />

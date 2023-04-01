@@ -252,7 +252,7 @@ const generateEmailContent = (data: any) => {
                            </table></td>
                          </tr>
                          <tr>
-                            <td align="left" style="Margin:0;padding-left:5px;padding-right:5px;padding-top:15px;padding-bottom:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${custName}<br>${lineOneAddress} &nbsp; ${lineTwoAddress}<br>${city} &nbsp; ${state}<br>${zipCode}<br>${country}</p></td>
+                            <td align="left" style="Margin:0;padding-left:5px;padding-right:5px;padding-top:15px;padding-bottom:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${custName}<br>${lineOneAddress} <br> ${lineTwoAddress != null ? `${lineTwoAddress} <br>` : '' } ${`${city}, ${state}`} <br>${zipCode}<br>${country}</p></td>
                          </tr>
                        </table></td>
                      </tr>
@@ -262,25 +262,26 @@ const generateEmailContent = (data: any) => {
              </tr>
            </table>
            <table cellpadding="0" cellspacing="0" class="es-content" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%">
-             <tr>
-              <td align="center" bgcolor="#fef8ed" style="padding:0;Margin:0;background-color:#fef8ed">
-               <table bgcolor="#fef8ed" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#fef8ed;width:600px">
-                 <tr>
-                  <td class="es-m-p10r es-m-p10l" align="left" style="Margin:0;padding-top:15px;padding-bottom:15px;padding-left:20px;padding-right:20px">
-                   <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                     <tr>
-                      <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
-                       <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-                         <tr>
-                          <td align="center" style="padding:10px;Margin:0;font-size:0px"><img class="adapt-img" src="https://mltkzh.stripocdn.email/content/guids/63272836-e04d-4b4d-bc58-9cf7710f239c/images/gc0178c5d0daaca803f470fc81dc23d2584f796d50e206e9bb7836a1354031b64be96a05e687aaea1c09952d5c191bddb_640.png" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="80"></td>
-                         </tr>
-                       </table></td>
-                     </tr>
-                   </table></td>
-                 </tr>
-               </table></td>
-             </tr>
-           </table></td>
+           <tr>
+            <td align="center" bgcolor="#fef8ed" style="padding:0;Margin:0;background-color:#fef8ed">
+             <table bgcolor="#fef8ed" class="es-content-body" align="center" cellpadding="0" cellspacing="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-color:#fef8ed;width:600px">
+               <tr>
+                <td class="es-m-p10r es-m-p10l" align="left" style="Margin:0;padding-top:15px;padding-bottom:15px;padding-left:20px;padding-right:20px">
+                 <table cellpadding="0" cellspacing="0" width="100%" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                   <tr>
+                    <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
+                     <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+                       <tr>
+                        <td align="center" style="padding:10px;Margin:0;font-size:0px"><img src="https://mltkzh.stripocdn.email/content/guids/63272836-e04d-4b4d-bc58-9cf7710f239c/images/gc0178c5d0daaca803f470fc81dc23d2584f796d50e206e9bb7836a1354031b64be96a05e687aaea1c09952d5c191bddb_640.png" alt style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="80"></td>
+                       </tr>
+                     </table></td>
+                   </tr>
+                 </table></td>
+               </tr>
+             </table></td>
+           </tr>
+         </table>
+           </td>
          </tr>
        </table>
       </div>

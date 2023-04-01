@@ -18,7 +18,7 @@ function Faq({ faq }: Props) {
       </Head>
       <Header />
 
-      <main>
+      <main className="h-[110vh]">
         <div className="flex flex-col items-center justify-center">
           <h1 className="relative ml-[12px] mt-8 text-4xl uppercase tracking-[10px] underline decoration-[#FFCEEE] underline-offset-8 md:ml-0 md:text-4xl  ">
             FAQ

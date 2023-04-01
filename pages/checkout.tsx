@@ -11,10 +11,14 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Stripe } from "stripe";
 import { useSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { fetchParentProducts } from "@/utils/fetchParentProducts";
 
-type Props = {};
+type Props = {
+  parentProducts: ParentProduct[];
+};
 
-function Checkout({}: Props) {
+function Checkout({ parentProducts }: Props) {
   const items = useSelector(selectBasketItems);
   const basketTotal = useSelector(selectBasketTotal);
   const router = useRouter();
@@ -94,7 +98,12 @@ function Checkout({}: Props) {
         {items.length > 0 && (
           <div className="mx-6 md:mx-8">
             {Object.entries(groupedItemsInBasket).map(([key, items]) => (
-              <CheckoutProduct key={key} items={items} id={key} />
+              <CheckoutProduct
+                key={key}
+                items={items}
+                id={key}
+                parentProducts={parentProducts}
+              />
             ))}
 
             {/* Main Total Div */}
@@ -111,10 +120,13 @@ function Checkout({}: Props) {
                   {/* Shipping row */}
                   <div className="flex justify-between">
                     <p>Shipping</p>
-                    <p>$5.00</p>
+                    <p className="text-sm text-gray-500">
+                      {" "}
+                      Calculated at next step
+                    </p>
                   </div>
 
-                  {/* Estimated Tax row */}
+                  {/* Estimated Tax row
                   <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-x-1 lg:flex-row">
                       Estimated tax:
@@ -122,7 +134,7 @@ function Checkout({}: Props) {
                     <p className="text-sm text-gray-500">
                       Calculated at next step
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Divided, Total Section */}
@@ -150,3 +162,13 @@ function Checkout({}: Props) {
 }
 
 export default Checkout;
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const parentProducts = await fetchParentProducts();
+
+  return {
+    props: {
+      parentProducts,
+    },
+  };
+};
