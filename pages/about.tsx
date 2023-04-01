@@ -1,8 +1,9 @@
 import Header from "@/components/Header";
-import { urlFor } from "@/sanity";
+import { sanityClient, urlFor } from "@/sanity";
 import { fetchAboutUs } from "@/utils/fetchAboutUs";
 import { PortableText } from "@portabletext/react";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
+import { groq } from "next-sanity";
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
@@ -73,17 +74,18 @@ function About({ aboutUs }: Props) {
 
 export default About;
 
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const aboutUs: AboutUs[] = await fetchAboutUs();
+export const getStaticProps: GetStaticProps<Props> = async () => {  
+  const query = groq`
+  *[_type == "about_us"]{
+    ...
+  }`;
+
+  const aboutUs = await sanityClient.fetch(query)
 
   return {
     props: {
       aboutUs,
     },
-    // Next.js will attempt to regenerate the page:
-    // - When a request comes in
-    // - At most once every 10 seconds
-    // This helps with caching the data
-    revalidate: 10,
+
   };
 };

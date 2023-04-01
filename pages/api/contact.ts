@@ -1,5 +1,4 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import product from "@/sanity/schemas/product";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { transporter } from "../../config/nodemailer";
 

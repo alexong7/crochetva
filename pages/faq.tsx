@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
+import { sanityClient } from "@/sanity";
 import { fetchFAQ } from "@/utils/fetchFAQ";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
+import { groq } from "next-sanity";
 import Head from "next/head";
 
 import React from "react";
@@ -42,16 +44,18 @@ function Faq({ faq }: Props) {
 export default Faq;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const faq: FAQ[] = await fetchFAQ();
+  const query = groq`
+  *[_type == "faq"]{
+      ...
+    }`;
+  
+
+    const faq = await sanityClient.fetch(query);
+  
 
   return {
     props: {
       faq,
     },
-    // Next.js will attempt to regenerate the page:
-    // - When a request comes in
-    // - At most once every 10 seconds
-    // This helps with caching the data
-    revalidate: 10,
   };
 };

@@ -1,6 +1,5 @@
 import { addToBasket, removeFromBasket } from "@/redux/basketSlice";
 import { urlFor } from "@/sanity";
-import parentProduct from "@/sanity/schemas/parentProduct";
 import { USDollar } from "@/utils/utils";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
