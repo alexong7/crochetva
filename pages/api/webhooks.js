@@ -103,8 +103,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     console.log('inside post webhook');
     console.log(process.env.STRIPE_SIGNING_SECRET);
-    const buf = await buffer(req);
-    const payload = buf.toString();
+    const rawBody = await buffer(req);
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
@@ -113,7 +112,7 @@ export default async function handler(req, res) {
     try {
       if (!sig || !endpointSecret) return;
 
-      event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(rawBody.toString(), sig, endpointSecret);
     } catch (error) {
       console.log(`Webhook Error ${error.message}`);
       return res.status(400).send(`Webhook Error ${error.message}`);
