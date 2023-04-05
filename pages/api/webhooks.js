@@ -2,6 +2,7 @@ import { buffer } from "micro";
 import { fetchOrder } from "@/utils/fetchOrder";
 import { sanityClient } from "../../sanity";
 import { urlFor } from "@/sanity";
+import getRawBody from "raw-body";
 
 import Stripe from "stripe";
 import { fetchProductById } from "@/utils/fetchProductById";
@@ -100,7 +101,7 @@ export default async function handler(req, res) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   if (req.method === "POST") {
-    const buf = await buffer(req);
+    const rawBody = await getRawBody(req);
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
@@ -109,7 +110,7 @@ export default async function handler(req, res) {
     try {
       if (!sig || !endpointSecret) return;
 
-      event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
     } catch (error) {
       console.log(`Webhook Error ${error.message}`);
       return res.status(400).send(`Webhook Error ${error.message}`);
