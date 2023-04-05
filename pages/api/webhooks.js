@@ -1,7 +1,7 @@
 import { buffer } from "micro";
 import { fetchOrder } from "@/utils/fetchOrder";
 import { sanityClient } from "../../lib/sanity";
-import { urlFor } from "@/sanity";
+import { urlFor } from "@/lib/sanity";
 import getRawBody from "raw-body";
 
 import Stripe from "stripe";
@@ -103,8 +103,8 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     console.log('inside post webhook');
     console.log(process.env.STRIPE_SIGNING_SECRET);
-    const buffer = await buffer(req);
-    const payload = buffer.toString();
+    const buf = await buffer(req);
+    const payload = buf.toString();
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 

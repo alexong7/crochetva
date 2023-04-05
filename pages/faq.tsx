@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
-import { sanityClient } from "@/sanity";
-import { fetchFAQ } from "@/utils/fetchFAQ";
-import { GetServerSideProps, GetStaticProps } from "next";
+import { sanityClient } from "@/lib/sanity";
+import {  GetStaticProps } from "next";
 import { groq } from "next-sanity";
 import Head from "next/head";
 

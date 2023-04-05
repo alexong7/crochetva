@@ -1,5 +1,5 @@
 import { addToBasket } from "@/redux/basketSlice";
-import { urlFor } from "@/sanity";
+import { urlFor } from "@/lib/sanity";
 import { getProductPrice } from "@/utils/utils";
 import { ShoppingCartIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";

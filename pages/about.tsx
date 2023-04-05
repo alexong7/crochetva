@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import { sanityClient, urlFor } from "@/sanity";
+import { sanityClient, urlFor } from "@/lib/sanity";
 import { fetchAboutUs } from "@/utils/fetchAboutUs";
 import { PortableText } from "@portabletext/react";
 import { GetServerSideProps, GetStaticProps } from "next";

@@ -15,7 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useSession } from "next-auth/react";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { urlFor } from "@/sanity";
+import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
 import { fetchOrder } from "@/utils/fetchOrder";
 

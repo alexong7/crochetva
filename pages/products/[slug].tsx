@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import { addToBasket } from "@/redux/basketSlice";
-import { urlFor } from "@/sanity";
+import { urlFor } from "@/lib/sanity";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
 import { getProductPrice, USDollar } from "@/utils/utils";
