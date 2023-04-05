@@ -102,7 +102,6 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     console.log('inside post webhook');
-    console.log(process.env.STRIPE_SIGNING_SECRET);
     const rawBody = await buffer(req);
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
