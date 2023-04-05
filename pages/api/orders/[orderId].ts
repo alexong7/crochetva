@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { groq } from "next-sanity";
 import { useRouter } from "next/router";
-import { sanityClient } from "../../../sanity";
+import { sanityClient } from "../../../lib/sanity";
 
 type Data = {
   order: Order;
