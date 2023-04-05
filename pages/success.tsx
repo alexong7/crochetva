@@ -27,7 +27,6 @@ interface Props {
 
 function Success({ products, order, checkoutSession }: Props) {
   const router = useRouter();
-  const { session_id } = router.query;
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
@@ -94,7 +93,7 @@ function Success({ products, order, checkoutSession }: Props) {
             </div>
             <div>
               <p className="text-sm text-gray-600">
-                Order #{order?.order_number || "DEFAULT"}
+                Order #{checkoutSession?.metadata?.orderNumber || "(Refresh Page)"}
               </p>
               <h4 className="text-lg">
                 Thank you{" "}
@@ -166,7 +165,7 @@ function Success({ products, order, checkoutSession }: Props) {
                 </button>
 
                 <p className="text-xl font-medium text-black">
-                  {USDollar.format(order.amount)}
+                  {USDollar.format(checkoutSession?.amount_total! / 100)}
                 </p>
               </div>
             </div>
@@ -227,7 +226,7 @@ function Success({ products, order, checkoutSession }: Props) {
                   <p className="flex items-center gap-x-4 text-xs text-[gray]">
                     USD
                     <span className="text-xl font-medium text-black">
-                      {USDollar.format(order.amount)}
+                      {USDollar.format(checkoutSession?.amount_total! / 100)}
                     </span>
                   </p>
                 </div>
@@ -264,6 +263,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const orderNumber = checkoutSession.metadata?.orderNumber;
 
   const order = await fetchOrder(orderNumber!);
+
 
   return {
     props: {
