@@ -50,8 +50,8 @@ function Success({ products, order, checkoutSession }: Props) {
     filteredProducts.push(foundProduct!);
   });
 
-  console.log("filtred Products", filteredProducts);
 
+  console.log('Success - Order:', order)
   return (
     <div>
       <Head>

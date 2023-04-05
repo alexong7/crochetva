@@ -136,14 +136,12 @@ export default async function handler(req, res) {
 
       // Send Order Confirmation if order fufills
       await orderConfirmation(session, order)
-        .then(() => res.status(200))
+        .then(() => res.status(200).send({message: 'Success'}))
         .catch((err) =>
           res.status(400).send(`Order Confirmation Error ${err.message}`),
         );
     }
   }
-
-  return res.status(200);
 }
 
 export const config = {
