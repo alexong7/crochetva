@@ -96,13 +96,19 @@ function ProductScreen({ products, parentProducts }: Props) {
         {/* Divider div */}
         <div className="mx-4 divide-y divide-gray-300 lg:mt-4">
           {/* Product Image, Info and Options */}
-          <div className="mx-4 mt-4 flex flex-col sm:flex-row">
+          <div className="mx-4 mt-4 flex flex-col sm:flex-row ">
+
+
+
+
             <ImageGallery
               items={images}
               useBrowserFullscreen={false}
               showPlayButton={false}
               showFullscreenButton={false}
-            />
+              />
+
+
             {/* Product Title, price, colorways */}
             <div className="mt-6 flex-1  sm:ml-6  sm:mr-0 ">
               <div>

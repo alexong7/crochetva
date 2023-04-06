@@ -38,7 +38,7 @@ function Landing() {
       h-[450px] w-[450px] transition-all duration-500 md:inline
       lg:h-[600px] lg:w-[600px]"
       >
-        <Image src="/Ava-25.jpg" alt="" layout="fill" objectFit="contain" />
+        <Image src="/Ava-9.jpg" alt="" layout="fill" objectFit="contain" />
       </div>
     </section>
   );
@@ -46,4 +46,3 @@ function Landing() {
 
 export default Landing;
 
-const landingImage = "https://i.postimg.cc/1RN1SYf3/Ava-25.jpg";

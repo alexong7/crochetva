@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import { selectBasketItems, selectBasketTotal } from "@/redux/basketSlice";
 import getStripe from "@/utils/get-stripejs";
 import { fetchPostJSON, USDollar } from "@/utils/utils";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

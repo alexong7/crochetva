@@ -2,7 +2,6 @@ import { buffer } from "micro";
 import { fetchOrder } from "@/utils/fetchOrder";
 import { sanityClient } from "../../lib/sanity";
 import { urlFor } from "@/lib/sanity";
-import getRawBody from "raw-body";
 
 import Stripe from "stripe";
 import { fetchProductById } from "@/utils/fetchProductById";
