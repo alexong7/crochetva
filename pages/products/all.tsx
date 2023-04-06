@@ -1,9 +1,8 @@
 import Basket from "@/components/Basket";
-import Header from "@/components/Header";
-import Product from "@/components/Product";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import React from "react";
 
@@ -12,7 +11,18 @@ type Props = {
   parentProducts: ParentProduct[];
 };
 
+const DynamicHeader = dynamic(() => import('../../components/Header'), {
+  loading: () => <p>Loading...</p>,
+})
+
+const Product = dynamic(() => import('../../components/Product'), {
+  loading: () => <p>Loading...</p>,
+})
+
+
 function AllProducts({ products, parentProducts }: Props) {
+
+  
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -20,7 +30,7 @@ function AllProducts({ products, parentProducts }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
+      <DynamicHeader />
 
       <Basket />
 
@@ -40,7 +50,7 @@ function AllProducts({ products, parentProducts }: Props) {
 
 export default AllProducts;
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const products = await fetchProducts();
   const parentProducts = await fetchParentProducts();
 
@@ -49,5 +59,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
       products,
       parentProducts,
     },
+     // Next.js will attempt to regenerate the page:
+    // - When a request comes in
+    // - At most once every 10 seconds 
+    // This helps with caching the data
+    revalidate: 10
   };
 };
