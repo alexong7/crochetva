@@ -1,15 +1,13 @@
 import Head from "next/head";
-import Header from "@/components/Header";
-import Landing from "@/components/Landing";
 import { fetchCategories } from "../utils/fetchCategories";
 import { GetServerSideProps } from "next";
-import ProductPanel from "@/components/ProductPanel";
 import { fetchProducts } from "@/utils/fetchProducts";
 import { getSession } from "next-auth/react";
 import Basket from "@/components/Basket";
 import type { Session } from "next-auth";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic'
 
 interface Props {
   categories: Category[];
@@ -25,6 +23,18 @@ export default function Home({ categories, parentProducts, products }: Props) {
 
   if (!mounted) return null;
 
+
+const DynamicProductPanel = dynamic(() => import('../components/ProductPanel'), {
+  loading: () => <p>Loading...</p>,
+})
+
+const DynamicHeader = dynamic(() => import('../components/Header'), {
+  loading: () => <p>Loading...</p>,
+})
+
+const DynamicLanding = dynamic(() => import('../components/Landing'), {
+  loading: () => <p>Loading...</p>,
+})
   return (
     <div>
       <Head>
@@ -34,19 +44,20 @@ export default function Home({ categories, parentProducts, products }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header />
+      <DynamicHeader />
 
       <Basket />
 
       <main className="relative h-[200vh] min-h-screen">
-        <Landing />
+        <DynamicLanding />
       </main>
       <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#fcf4f4]">
-        <ProductPanel
-          categories={categories}
-          parentProducts={parentProducts}
-          products={products}
+        <DynamicProductPanel 
+            categories={categories}
+            parentProducts={parentProducts}
+            products={products}
         />
+        
       </section>
     </div>
   );
