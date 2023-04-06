@@ -13,7 +13,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { useSession } from "next-auth/react";
 import { fetchProducts } from "@/utils/fetchProducts";
 import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
@@ -27,7 +26,6 @@ interface Props {
 
 function Success({ products, order, checkoutSession }: Props) {
   const router = useRouter();
-  const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
 
@@ -97,7 +95,7 @@ function Success({ products, order, checkoutSession }: Props) {
               </p>
               <h4 className="text-lg">
                 Thank you{" "}
-                {session ? session.user?.name?.split(" ")[0] : "Guest"}
+                {checkoutSession?.customer_details?.name?.split(' ')[0] || 'Guest'}
               </h4>
             </div>
           </div>

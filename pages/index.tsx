@@ -1,10 +1,8 @@
 import Head from "next/head";
 import { fetchCategories } from "../utils/fetchCategories";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { getSession } from "next-auth/react";
 import Basket from "@/components/Basket";
-import type { Session } from "next-auth";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { useEffect, useState } from "react";
 import dynamic from 'next/dynamic'
@@ -13,7 +11,6 @@ interface Props {
   categories: Category[];
   parentProducts: ParentProduct[];
   products: Product[];
-  session: Session | null;
 }
 
 export default function Home({ categories, parentProducts, products }: Props) {
@@ -32,9 +29,7 @@ const DynamicHeader = dynamic(() => import('../components/Header'), {
   loading: () => <p>Loading...</p>,
 })
 
-const DynamicLanding = dynamic(() => import('../components/Landing'), {
-  loading: () => <p>Loading...</p>,
-})
+const DynamicLanding = dynamic(() => import('../components/Landing'))
   return (
     <div>
       <Head>
@@ -64,20 +59,23 @@ const DynamicLanding = dynamic(() => import('../components/Landing'), {
 }
 
 // Backend Code to Sanity
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context,
+export const getStaticProps: GetStaticProps<Props> = async (
 ) => {
   const categories = await fetchCategories();
   const parentProducts = await fetchParentProducts();
   const products = await fetchProducts();
-  const session = await getSession(context);
 
   return {
     props: {
       categories,
       parentProducts,
       products,
-      session,
     },
+
+    // Next.js will attempt to regenerate the page:
+    // - When a request comes in
+    // - At most once every 10 seconds
+    // This helps with caching the data
+    revalidate: 10,
   };
 };

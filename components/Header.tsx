@@ -8,13 +8,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import { selectBasketItems } from "@/redux/basketSlice";
-import { useSession, signIn, signOut } from "next-auth/react";
 import MobileMenu from "./MobileMenu";
 
 function Header() {
   // Track how many items in cart
   const items = useSelector(selectBasketItems);
-  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
   return (
@@ -63,18 +61,7 @@ function Header() {
           </div>
         </Link>
 
-        {session ? (
-          <Image
-            src={session.user?.image || defaultUserIcon}
-            alt=""
-            className="cursor-pointer rounded-full"
-            width={34}
-            height={34}
-            onClick={() => signOut()}
-          />
-        ) : (
-          <UserIcon className="headerIcon" onClick={() => signIn()} />
-        )}
+   
 
         <div>
           <Bars3Icon
@@ -93,5 +80,4 @@ export default Header;
 const defaultImage =
   "https://i.pinimg.com/originals/d7/14/54/d714540f9b3fc4127d14f00e3a084e36.png";
 
-const defaultUserIcon =
-  "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper.png";
+

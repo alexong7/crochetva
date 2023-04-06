@@ -14,16 +14,22 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Tooltip } from "@chakra-ui/react";
 
-import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
+import { ReactImageGalleryItem } from "react-image-gallery";
 
 import "react-image-gallery/styles/css/image-gallery.css";
+import dynamic from "next/dynamic";
 
 interface Props {
   products: Product[];
   parentProducts: ParentProduct[];
 }
 
-function ProductScreen({ products, parentProducts }: Props) {
+const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
+  loading: () => <p>Loading...</p>,
+})
+
+
+ function ProductScreen({ products, parentProducts }: Props) {
   const dispatch = useDispatch();
   const { query } = useRouter();
   const { slug } = query;
@@ -98,10 +104,7 @@ function ProductScreen({ products, parentProducts }: Props) {
           {/* Product Image, Info and Options */}
           <div className="mx-4 mt-4 flex flex-col sm:flex-row ">
 
-
-
-
-            <ImageGallery
+            <DynamicImageGallery
               items={images}
               useBrowserFullscreen={false}
               showPlayButton={false}

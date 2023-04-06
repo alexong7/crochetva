@@ -1,6 +1,4 @@
 import Button from "@/components/Button";
-import CheckoutProduct from "@/components/CheckoutProduct";
-import Header from "@/components/Header";
 import { selectBasketItems, selectBasketTotal } from "@/redux/basketSlice";
 import getStripe from "@/utils/get-stripejs";
 import { fetchPostJSON, USDollar } from "@/utils/utils";
@@ -9,9 +7,9 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Stripe } from "stripe";
-import { useSession } from "next-auth/react";
 import { GetServerSideProps } from "next";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
+import dynamic from "next/dynamic";
 
 type Props = {
   parentProducts: ParentProduct[];
@@ -21,7 +19,14 @@ function Checkout({ parentProducts }: Props) {
   const items = useSelector(selectBasketItems);
   const basketTotal = useSelector(selectBasketTotal);
   const router = useRouter();
-  const { data: session } = useSession();
+
+  const DynamicCheckoutProduct = dynamic(() => import('../components/CheckoutProduct'), {
+    loading: () => <p>Loading...</p>,
+  })
+
+  const DynamicHeader = dynamic(() => import('../components/Header'), {
+    loading: () => <p>Loading...</p>,
+  })
 
   // States
   // ------
@@ -38,7 +43,6 @@ function Checkout({ parentProducts }: Props) {
       "/api/checkout_sessions",
       {
         items: items,
-        email: session?.user?.email || null,
       },
     );
 
@@ -78,7 +82,7 @@ function Checkout({ parentProducts }: Props) {
         <title>Bag - Crochetva</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header />
+      <DynamicHeader />
 
       <main className="mx-auto max-w-5xl pb-24">
         <div className="px-5">
@@ -97,7 +101,7 @@ function Checkout({ parentProducts }: Props) {
         {items.length > 0 && (
           <div className="mx-6 md:mx-8">
             {Object.entries(groupedItemsInBasket).map(([key, items]) => (
-              <CheckoutProduct
+              <DynamicCheckoutProduct
                 key={key}
                 items={items}
                 id={key}

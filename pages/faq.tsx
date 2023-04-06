@@ -56,5 +56,10 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     props: {
       faq,
     },
+     // Next.js will attempt to regenerate the page:
+    // - When a request comes in
+    // - At most once every hour 
+    // This helps with caching the data
+    revalidate: 3600,
   };
 };

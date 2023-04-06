@@ -1,8 +1,7 @@
 import Header from "@/components/Header";
 import { sanityClient, urlFor } from "@/lib/sanity";
-import { fetchAboutUs } from "@/utils/fetchAboutUs";
 import { PortableText } from "@portabletext/react";
-import { GetServerSideProps, GetStaticProps } from "next";
+import { GetStaticProps } from "next";
 import { groq } from "next-sanity";
 import Head from "next/head";
 import Image from "next/image";
@@ -86,6 +85,10 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     props: {
       aboutUs,
     },
-
+    // Next.js will attempt to regenerate the page:
+    // - When a request comes in
+    // - At most once every hour 
+    // This helps with caching the data
+    revalidate: 3600,
   };
 };

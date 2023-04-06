@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Button from "./Button";
 import Link from "next/link";
+import landingImage from "../public/Ava-9.jpg"
 
 function Landing() {
   return (
@@ -38,7 +39,7 @@ function Landing() {
       h-[450px] w-[450px] transition-all duration-500 md:inline
       lg:h-[600px] lg:w-[600px]"
       >
-        <Image src="/Ava-9.jpg" alt="" layout="fill" objectFit="contain" />
+        <Image src={landingImage} alt="" layout="fill" objectFit="contain" priority/>
       </div>
     </section>
   );
