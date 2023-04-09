@@ -17,7 +17,6 @@ import { ReactImageGalleryItem } from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import dynamic from "next/dynamic";
 import { queryParentProducts, queryProducts } from "@/utils/queries";
-import { groq } from "next-sanity";
 
 interface Props {
   products: Product[];
@@ -96,7 +95,7 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className=" overflow-hidden">
       <Head>
         <title>{parentProduct?.title}</title>
         <link rel="icon" href="/favicon.ico" />
@@ -109,6 +108,7 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
         <div className="mx-4 divide-y divide-gray-300 lg:mt-4">
           {/* Product Image, Info and Options */}
           <div className="mx-4 mt-4 flex flex-col sm:flex-row ">
+
 
             <DynamicImageGallery
               items={images}
@@ -204,6 +204,15 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
 export default ProductScreen;
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  // When this is true (in preview environments) don't
+  // prerender any static pages
+  // (faster builds, but slower initial page load)
+  if (process.env.SKIP_BUILD_STATIC_GENERATION) {
+    return {
+      paths: [],
+      fallback: "blocking",
+    };
+  }
 
   const parentProducts = await sanityClient.fetch(queryParentProducts)
 

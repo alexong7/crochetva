@@ -7,7 +7,7 @@ import landingImage from "../public/Ava-9.jpg"
 function Landing() {
   return (
     <section
-      className="sticky top-0 mx-auto flex h-screen max-w-[1350px] items-center justify-between px-6
+      className="sticky top-0 mx-auto flex h-screen items-center justify-around xl:justify-center xl:space-x-20 px-6
         "
     >
       {/* Landing Text */}
@@ -36,8 +36,8 @@ function Landing() {
       {/* Landing Image */}
       <div
         className="relative hidden 
-      h-[450px] w-[450px] transition-all duration-500 md:inline
-      lg:h-[600px] lg:w-[600px]"
+      transition-all duration-500 md:inline
+      md:h-[450px] md:w-[450px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]"
       >
         <Image src={landingImage} alt="" layout="fill" objectFit="contain" priority/>
       </div>
