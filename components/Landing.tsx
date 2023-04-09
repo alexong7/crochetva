@@ -7,7 +7,7 @@ import landingImage from "../public/Ava-9.jpg"
 function Landing() {
   return (
     <section
-      className="sticky top-0 mx-auto flex h-screen items-center justify-around xl:justify-center xl:space-x-20 px-6
+      className="sticky top-0 mx-auto flex h-screen items-center justify-between md:justify-around xl:justify-center xl:space-x-20 px-6
         "
     >
       {/* Landing Text */}
