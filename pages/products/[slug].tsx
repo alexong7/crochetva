@@ -1,14 +1,12 @@
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import { addToBasket } from "@/redux/basketSlice";
-import { urlFor } from "@/lib/sanity";
-import { fetchParentProducts } from "@/utils/fetchParentProducts";
-import { fetchProducts } from "@/utils/fetchProducts";
-import { getProductPrice, USDollar } from "@/utils/utils";
+import { sanityClient, urlFor } from "@/lib/sanity";
+import { getProductPrice } from "@/utils/utils";
 import { PortableText } from "@portabletext/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next/types";
+import { GetStaticPaths, GetStaticProps } from "next/types";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
@@ -18,6 +16,8 @@ import { ReactImageGalleryItem } from "react-image-gallery";
 
 import "react-image-gallery/styles/css/image-gallery.css";
 import dynamic from "next/dynamic";
+import { queryParentProducts, queryProducts } from "@/utils/queries";
+import { groq } from "next-sanity";
 
 interface Props {
   products: Product[];
@@ -31,14 +31,14 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
 
  function ProductScreen({ products, parentProducts }: Props) {
   const dispatch = useDispatch();
-  const { query } = useRouter();
-  const { slug } = query;
+  const router = useRouter();
+  const { slug } = router.query;
 
-  const parentProduct = parentProducts.find(
+  const parentProduct = parentProducts?.find(
     (product) => product.slug.current === slug,
   );
 
-  const childProducts: Product[] = products.filter(
+  const childProducts: Product[] = products?.filter(
     (product) => product.parentProduct._ref === parentProduct?._id,
   );
 
@@ -66,11 +66,11 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
     return currentProductQuantity <= 0 ? "Out of Stock" : "Add to Bag";
   };
 
-  childProducts.reverse();
+  childProducts?.reverse();
 
   const imageUrls: string[] = [];
 
-  childProducts.forEach((product) => {
+  childProducts?.forEach((product) => {
     product.image.forEach((image) => imageUrls.push(urlFor(image).url()));
   });
 
@@ -84,8 +84,14 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
   });
 
   const [mounted, setMounted] = useState(false);
+  
 
   useEffect(() => setMounted(true), []);
+
+  if(router.isFallback){
+    return <div>Loading...</div>
+
+  }
 
   if (!mounted) return null;
 
@@ -197,14 +203,28 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
 
 export default ProductScreen;
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const products = await fetchProducts();
-  const parentProducts = await fetchParentProducts();
+export const getStaticPaths: GetStaticPaths = async () => {
+
+  const parentProducts = await sanityClient.fetch(queryParentProducts)
+
+  const slugs = parentProducts.map((product: any) => `/products/${product.slug.current}`);
+  
+  return {
+    paths: slugs,
+    fallback: true,
+  }
+}
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  
+  const products = await sanityClient.fetch(queryProducts);
+  const parentProducts = await sanityClient.fetch(queryParentProducts)
 
   return {
     props: {
       products,
       parentProducts,
     },
+    revalidate: 30,
   };
 };
