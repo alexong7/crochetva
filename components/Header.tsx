@@ -9,6 +9,7 @@ import {
 import { useSelector } from "react-redux";
 import { selectBasketItems } from "@/redux/basketSlice";
 import MobileMenu from "./MobileMenu";
+import  Logo  from "../public/Logo.png"
 
 function Header() {
   // Track how many items in cart
@@ -22,7 +23,7 @@ function Header() {
         <Link href="/">
           <div className="relative h-12 w-10 cursor-pointer opacity-75 transition hover:opacity-100">
             <Image
-              src={defaultImage}
+              src={Logo}
               alt="Image not found"
               layout="fill"
               objectFit="contain"

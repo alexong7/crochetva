@@ -17,6 +17,7 @@ import { fetchProducts } from "@/utils/fetchProducts";
 import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
 import { fetchOrder } from "@/utils/fetchOrder";
+import Logo from "../public/Logo.png"
 
 interface Props {
   products: Product[];
@@ -60,7 +61,7 @@ function Success({ products, order, checkoutSession }: Props) {
         <Link href="/">
           <div className="relative ml-4 h-24 w-12 cursor-pointer transition lg:hidden">
             <Image
-              src={defaultImage}
+              src={Logo}
               layout="fill"
               objectFit="contain"
               alt=""
@@ -77,7 +78,7 @@ function Success({ products, order, checkoutSession }: Props) {
           <Link href="/">
             <div className="relative  hidden h-40 w-20 cursor-pointer transition lg:inline-flex">
               <Image
-                src={defaultImage}
+                src={Logo}
                 layout="fill"
                 objectFit="contain"
                 alt=""
