@@ -9,7 +9,7 @@ import {
 import { useSelector } from "react-redux";
 import { selectBasketItems } from "@/redux/basketSlice";
 import MobileMenu from "./MobileMenu";
-import  Logo  from "../public/Logo.png"
+import  Logo2  from "../public/Logo2.png"
 
 function Header() {
   // Track how many items in cart
@@ -17,14 +17,14 @@ function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex w-full items-center justify-between bg-[#FFCEEE] p-4">
+    <header className="sticky top-0 z-30 flex w-full items-center justify-between bg-[#FFCEEE] p-4 h-[80px] md:h-[100px]">
       {/* Logo */}
-      <div className="flex items-center justify-center md:w-1/5">
+      <div className=" flex items-center justify-center md:w-1/5">
         <Link href="/">
-          <div className="relative h-12 w-10 cursor-pointer opacity-75 transition hover:opacity-100">
+          <div className="relative  h-[75px] md:h-[90px]  w-24 cursor-pointer opacity-75 transition hover:opacity-100">
             <Image
-              src={Logo}
-              alt="Image not found"
+              src={Logo2}
+              alt=""
               layout="fill"
               objectFit="contain"
             />
