@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Stripe } from "stripe";
-import { GetServerSideProps } from "next";
+import { GetStaticProps } from "next";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import dynamic from "next/dynamic";
 
@@ -80,7 +80,7 @@ function Checkout({ parentProducts }: Props) {
     <div className="min-h-screen overflow-hidden bg-white">
       <Head>
         <title>Bag - Crochetva</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
       <DynamicHeader />
 
@@ -166,12 +166,13 @@ function Checkout({ parentProducts }: Props) {
 
 export default Checkout;
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const parentProducts = await fetchParentProducts();
 
   return {
     props: {
       parentProducts,
     },
+    revalidate: 5,
   };
 };

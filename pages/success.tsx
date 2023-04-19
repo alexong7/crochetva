@@ -54,7 +54,7 @@ function Success({ products, order, checkoutSession }: Props) {
     <div>
       <Head>
         <title> Thank You! - Crochetva</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
 
       <header className="mx-auto max-w-xl">

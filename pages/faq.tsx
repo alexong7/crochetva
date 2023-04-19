@@ -15,7 +15,7 @@ function Faq({ faq }: Props) {
     <div>
       <Head>
         <title>FAQ</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
       <Header />
 

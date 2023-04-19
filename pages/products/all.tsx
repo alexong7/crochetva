@@ -27,7 +27,7 @@ function AllProducts({ products, parentProducts }: Props) {
     <div className="min-h-screen overflow-hidden">
       <Head>
         <title>All Products</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
 
       <DynamicHeader />

@@ -16,7 +16,7 @@ function About({ aboutUs }: Props) {
     <div className="min-h-screen overflow-hidden">
       <Head>
         <title>About Us</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
 
       <Header />

@@ -98,7 +98,7 @@ const DynamicImageGallery = dynamic(() => import('react-image-gallery'), {
     <div className=" overflow-hidden">
       <Head>
         <title>{parentProduct?.title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logo2.png" />
       </Head>
 
       <Header />
