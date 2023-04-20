@@ -1,4 +1,4 @@
-import { stringify } from "querystring";
+
 
 export const sendOrderConfirmation = async (data: {}) => {
   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/orderConfirmation`, {

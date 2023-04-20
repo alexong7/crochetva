@@ -54,7 +54,8 @@ const decrementQuantity = async (product) => {
     });
 };
 
-// Sends an email order confirmation to the customer
+// Sends an email order confirmation to the customer and to our 
+// internal email so we are notified of a new order
 const orderConfirmation = async (session, order) => {
   const data = {};
 
@@ -93,7 +94,14 @@ const orderConfirmation = async (session, order) => {
   data.address = address;
   data.custName = custName;
 
+  // Send to customer
+  data.internal = false;
   await sendOrderConfirmation(data);
+
+  // Send to internal email
+  data.internal = true;
+  await sendOrderConfirmation(data);
+
 };
 
 export default async function handler(req, res) {
@@ -129,16 +137,18 @@ export default async function handler(req, res) {
       );
 
       // Fufill order
-      await fufillOrder(session, order).catch((err) =>
+      await fufillOrder(session, order)
+      .catch((err) =>
         res.status(400).send(`Webhook Error ${err.message}`),
       );
 
-      // Send Order Confirmation if order fufills
+      // Send order confirmation to customer and to
+      // our internal email
       await orderConfirmation(session, order)
-        .then(() => res.status(200).send({message: 'Success'}))
-        .catch((err) =>
-          res.status(400).send(`Order Confirmation Error ${err.message}`),
-        );
+      .then(() => res.status(200).end())
+      .catch((err) =>
+        res.status(400).send(`Order Confirmation Error ${err.message}`),
+      );
     }
   }
 }
