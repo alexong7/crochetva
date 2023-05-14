@@ -1,4 +1,6 @@
 import Basket from "@/components/Basket";
+import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
+import { fetchFlags } from "@/utils/fetchFlags";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
 import { GetStaticProps } from "next";
@@ -9,20 +11,25 @@ import React from "react";
 type Props = {
   products: Product[];
   parentProducts: ParentProduct[];
+  flags: Flag[];
 };
 
-const DynamicHeader = dynamic(() => import('../../components/Header'), {
+const DynamicHeader = dynamic(() => import("../../components/Header"), {
   loading: () => <p>Loading...</p>,
-})
+});
 
-const Product = dynamic(() => import('../../components/Product'), {
+const Product = dynamic(() => import("../../components/Product"), {
   loading: () => <p>Loading...</p>,
-})
+});
 
+function AllProducts({ products, parentProducts, flags }: Props) {
+  /// Flags
+  const inventoryDisabledFlag = flags?.find(
+    (flag) => flag.name === DISABLE_INVENTORY_FLAG,
+  );
 
-function AllProducts({ products, parentProducts }: Props) {
+  const inventoryEnabled = !inventoryDisabledFlag?.enabled ?? true;
 
-  
   return (
     <div className="min-h-screen overflow-hidden">
       <Head>
@@ -40,7 +47,12 @@ function AllProducts({ products, parentProducts }: Props) {
         </p>
         <div className="tabPanel  ">
           {parentProducts.map((product, index) => (
-            <Product key={index} product={product} childProducts={products} />
+            <Product
+              key={index}
+              product={product}
+              childProducts={products}
+              inventoryEnabled={inventoryEnabled}
+            />
           ))}
         </div>
       </main>
@@ -53,16 +65,18 @@ export default AllProducts;
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const products = await fetchProducts();
   const parentProducts = await fetchParentProducts();
+  const flags = await fetchFlags();
 
   return {
     props: {
       products,
       parentProducts,
+      flags,
     },
-     // Next.js will attempt to regenerate the page:
+    // Next.js will attempt to regenerate the page:
     // - When a request comes in
-    // - At most once every 10 seconds 
+    // - At most once every 10 seconds
     // This helps with caching the data
-    revalidate: 10
+    revalidate: 10,
   };
 };
