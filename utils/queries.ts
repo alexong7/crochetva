@@ -11,10 +11,15 @@ export const queryParentProducts = groq`
     quantity,
     childProduct,
     description,
+    customColorHeader1,
+    customColors1,
+    customColorHeader2,
+    customColors2,  
+    customColorHeader3,
+    customColors3,
   }`;
 
-
- export const queryProducts = groq`
+export const queryProducts = groq`
 *[_type == "product"]{
     _id,
     category,
@@ -26,4 +31,18 @@ export const queryParentProducts = groq`
     slug,
     title,
     quantity,
+    isCustom,
   }`;
+
+export const queryColors = groq`
+  *[_type == "color"]{
+    _id,
+    hex,
+    name
+  }`;
+
+export const queryCustomColorLabels = groq`
+*[_type == "customColorLabel"]{
+  _id,
+  name
+}`;

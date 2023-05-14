@@ -58,5 +58,10 @@ export default {
       title: 'Quantity',
       type: 'number',
     },
+    {
+      name: 'isCustom',
+      title: 'Is Custom',
+      type: 'boolean',
+    },
   ],
 }

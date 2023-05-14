@@ -46,6 +46,7 @@ interface Product {
     _type: "reference";
     _ref: string;
   };
+  customProperties: { [key: string]: string };
   title: string;
   colorName: string;
   colorHex: string;
@@ -57,6 +58,7 @@ interface Product {
   };
   price: number;
   quantity: number;
+  isCustom: boolean;
 }
 
 interface ParentProduct {
@@ -81,6 +83,58 @@ interface ParentProduct {
   };
   price: number;
   description;
+  customColorHeader1: {
+    _type: "reference";
+    _ref: string;
+  };
+  customColors1: [
+    {
+      _type: "reference";
+      _ref: string;
+    },
+  ];
+  customColorHeader2: {
+    _type: "reference";
+    _ref: string;
+  };
+  customColors2: [
+    {
+      _type: "reference";
+      _ref: string;
+    },
+  ];
+  customColorHeader3: {
+    _type: "reference";
+    _ref: string;
+  };
+  customColors3: [
+    {
+      _type: "reference";
+      _ref: string;
+    },
+  ];
+}
+
+interface CustomOrderProduct {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "customOrderProduct";
+  order_number: string;
+  title: string;
+  price: number;
+  image: Image;
+  base_product: {
+    _type: "reference";
+    _ref: string;
+  };
+  customColorHeader1: string;
+  customColor1: string;
+  customColorHeader2: string;
+  customColor2: string;
+  customColorHeader3: string;
+  customColor3: string;
 }
 
 interface StripeProduct {
@@ -114,4 +168,23 @@ interface Order {
       _ref: string;
     },
   ];
+}
+
+interface Color {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "color";
+  hex: string;
+  name: string;
+}
+
+interface CustomColorLabel {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "customColorLabel";
+  name: string;
 }

@@ -22,7 +22,6 @@ export default async function handler(
 
     const internal: boolean = data.internal ?? false;
 
-
     try {
       await transporter.sendMail({
         from: process.env.EMAIL,
@@ -50,6 +49,7 @@ const generateEmailContent = (data: any) => {
   // General Data
   const orderNumber: string = data.orderNumber;
   const products: any = data.products;
+  const customProducts: any = data.customProducts;
 
   // Cost Data
   const subTotal = (data.subTotal / 100).toString();
@@ -68,11 +68,27 @@ const generateEmailContent = (data: any) => {
 
   let productRowHTMLData: string = "";
 
+  // Generate rows for reg products
   products.map((product: any) => {
     productRowHTMLData += productRowHTML(
       product.image,
       product.title,
       product.price,
+    );
+  });
+
+  // Generate rows for custom products
+  customProducts.map((product: any) => {
+    productRowHTMLData += productRowHTML(
+      product.image,
+      product.title,
+      product.price,
+      product.customColorHeader1,
+      product.customColor1,
+      product.customColorHeader2,
+      product.customColor2,
+      product.customColorHeader3,
+      product.customColor3,
     );
   });
 
@@ -254,7 +270,9 @@ const generateEmailContent = (data: any) => {
                            </table></td>
                          </tr>
                          <tr>
-                            <td align="left" style="Margin:0;padding-left:5px;padding-right:5px;padding-top:15px;padding-bottom:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${custName}<br>${lineOneAddress} <br> ${lineTwoAddress != null ? `${lineTwoAddress} <br>` : '' } ${`${city}, ${state}`} <br>${zipCode}<br>${country}</p></td>
+                            <td align="left" style="Margin:0;padding-left:5px;padding-right:5px;padding-top:15px;padding-bottom:20px"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${custName}<br>${lineOneAddress} <br> ${
+      lineTwoAddress != null ? `${lineTwoAddress} <br>` : ""
+    } ${`${city}, ${state}`} <br>${zipCode}<br>${country}</p></td>
                          </tr>
                        </table></td>
                      </tr>
@@ -297,54 +315,107 @@ const productRowHTML = (
   productImage: string,
   productTitle: string,
   productPrice: string,
-) =>
-  ` <tr><td class="esdev-adapt-off" align="left" style="padding:20px;Margin:0">
-  <table cellpadding="0" cellspacing="0" class="esdev-mso-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
-    <tr>
-     <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-      <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-        <tr>
-         <td align="left" style="padding:0;Margin:0;width:125px">
-          <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-            <tr>
-             <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#926B4A;font-size:14px"><img class="adapt-img p_image" src="${productImage}" alt="${productTitle}" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="125" title="Sony WH-1000XM4"></a></td>
-            </tr>
-          </table></td>
-        </tr>
-      </table></td>
-     <td style="padding:0;Margin:0;width:20px"></td>
-     <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-      <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-        <tr>
-         <td align="left" style="padding:0;Margin:0;width:125px">
-          <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-            <tr>
-             <td align="left" class="es-m-p0t es-m-p0b es-m-txt-l" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><h3 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:bold;color:#333333"><strong class="p_name">${productTitle}</strong></h3></td>
-            </tr>
-          </table></td>
-        </tr>
-      </table></td>
-     <td style="padding:0;Margin:0;width:20px"></td>
-     <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-      <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
-        <tr>
-         <td align="left" style="padding:0;Margin:0;width:176px">
-          <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-            
-          </table></td>
-        </tr>
-      </table></td>
-     <td style="padding:0;Margin:0;width:20px"></td>
-     <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
-      <table cellpadding="0" cellspacing="0" class="es-right" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
-        <tr>
-         <td align="left" style="padding:0;Margin:0;width:74px">
-          <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-            <tr>
-             <td align="right" class="es-m-p0t es-m-p0b" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><p class="p_price" style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">$${productPrice}</p></td>
-            </tr>
-          </table></td>
-        </tr>
-      </table></td>
-    </tr>
-  </table></td></tr>`;
+  customColorHeader1?: string,
+  customColor1?: string,
+  customColorHeader2?: string,
+  customColor2?: string,
+  customColorHeader3?: string,
+  customColor3?: string,
+) => {
+  const useCustomColor1 =
+    customColorHeader1 != undefined &&
+    customColorHeader1 != null &&
+    customColorHeader1.length != 0 &&
+    customColor1 != undefined &&
+    customColor1 != null &&
+    customColor1.length != 0;
+  const useCustomColor2 =
+    customColorHeader2 != undefined &&
+    customColorHeader2 != null &&
+    customColorHeader2.length != 0 &&
+    customColor2 != undefined &&
+    customColor2 != null &&
+    customColor2.length != 0;
+  const useCustomColor3 =
+    customColorHeader3 != undefined &&
+    customColorHeader3 != null &&
+    customColorHeader3.length != 0 &&
+    customColor3 != undefined &&
+    customColor3 != null &&
+    customColor3.length != 0;
+
+  return `  <tr>
+  <td class="esdev-adapt-off" align="left" style="padding:0;Margin:0;padding-top:20px;padding-left:20px;padding-right:20px">
+   <table cellpadding="0" cellspacing="0" class="esdev-mso-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:560px">
+     <tr>
+      <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
+       <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+         <tr>
+          <td align="left" style="padding:0;Margin:0;width:125px">
+           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+             <tr>
+              <td align="center" style="padding:0;Margin:0;font-size:0px"><a target="_blank" href="https://viewstripo.email" style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;text-decoration:underline;color:#926B4A;font-size:14px"><img class="adapt-img p_image" src="${productImage}" alt="${productTitle}" style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic" width="125" title="Marshall Monitor"></a></td>
+             </tr>
+           </table></td>
+         </tr>
+       </table></td>
+      <td style="padding:0;Margin:0;width:20px"></td>
+      <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
+       <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+         <tr>
+          <td align="left" style="padding:0;Margin:0;width:125px">
+           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+             <tr>
+              <td align="left" class="es-m-p0t es-m-p0b es-m-txt-l" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><h3 style="Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:20px;font-style:normal;font-weight:bold;color:#333333"><strong class="p_name">${productTitle}</strong></h3></td>
+             </tr>
+             ${
+               useCustomColor1
+                 ? `<tr>
+              <td align="left" style="padding:5px;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${customColorHeader1}: ${customColor1}</p></td>
+             </tr>`
+                 : ``
+             }
+             ${
+               useCustomColor2
+                 ? `<tr>
+             <td align="left" style="padding:5px;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${customColorHeader2}: ${customColor2}</p></td>
+            </tr>`
+                 : ``
+             }
+            ${
+              useCustomColor3
+                ? `<tr>
+             <td align="left" style="padding:5px;Margin:0"><p style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">${customColorHeader3}: ${customColor3}</p></td>
+            </tr>`
+                : ``
+            }
+           
+           </table></td>
+         </tr>
+       </table></td>
+      <td style="padding:0;Margin:0;width:20px"></td>
+      <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
+       <table cellpadding="0" cellspacing="0" class="es-left" align="left" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:left">
+         <tr>
+          <td align="left" style="padding:0;Margin:0;width:176px">
+           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+  
+           </table></td>
+         </tr>
+       </table></td>
+      <td style="padding:0;Margin:0;width:20px"></td>
+      <td class="esdev-mso-td" valign="top" style="padding:0;Margin:0">
+       <table cellpadding="0" cellspacing="0" class="es-right" align="right" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;float:right">
+         <tr>
+          <td align="left" style="padding:0;Margin:0;width:74px">
+           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
+             <tr>
+              <td align="right" class="es-m-p0t es-m-p0b" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><p class="p_price" style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#666666;font-size:14px">$${productPrice}</p></td>
+             </tr>
+           </table></td>
+         </tr>
+       </table></td>
+     </tr>
+   </table></td>
+ </tr>`;
+};

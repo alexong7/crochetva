@@ -17,6 +17,7 @@ export default async function handler(
     title,
     price,
     image,
+    isCustom,
   }[0]`;
 
   const product = await sanityClient.fetch(query);

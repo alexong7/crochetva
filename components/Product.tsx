@@ -32,7 +32,11 @@ function Product({ product, childProducts }: Props) {
   };
 
   const filteredProducts: Product[] = childProducts.filter(
-    (x) => x.parentProduct._ref === product?._id,
+    (x) =>
+      x.parentProduct._ref === product?._id &&
+      !x.isCustom &&
+      x.colorHex != undefined &&
+      x.colorHex != null,
   );
 
   const mainChildProduct = childProducts.find(

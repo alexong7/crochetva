@@ -42,10 +42,75 @@ export default async function handler(
       return metadata;
     };
 
+    const createNewCustomProduct = async (item: Product) => {
+      let baseProduct = {
+        _ref: item.parentProduct._ref,
+        _type: "reference",
+      };
+
+      let customColorHeader1,
+        customColorHeader2,
+        customColorHeader3 = "";
+      let customColor1,
+        customColor2,
+        customColor3 = "";
+      let index = 0;
+      Object.keys(item.customProperties).map((key) => {
+        switch (index) {
+          case 0:
+            customColorHeader1 = key;
+            customColor1 = item.customProperties[key];
+            break;
+
+          case 1:
+            customColorHeader2 = key;
+            customColor2 = item.customProperties[key];
+            break;
+          case 2:
+            customColorHeader3 = key;
+            customColor3 = item.customProperties[key];
+            break;
+        }
+        index++;
+      });
+
+      const newCustomProduct = {
+        _type: "customOrderProduct",
+        order_number: orderId.toString(),
+        image: item.image[0],
+        base_product: baseProduct,
+        title: item.title,
+        price: item.price,
+        customColorHeader1: customColorHeader1,
+        customColor1: customColor1,
+        customColorHeader2: customColorHeader2,
+        customColor2: customColor2,
+        customColorHeader3: customColorHeader3,
+        customColor3: customColor3,
+      };
+
+      sanityClient
+        .create(newCustomProduct)
+        .then(() => {
+          console.log("New Custom Product Created");
+        })
+        .catch(console.error);
+    };
+
     const createOrder = async () => {
       let products: { _key: string; _ref: string; _type: string }[] = [];
+      let customOrderDetails: string[] = [];
 
       items.map((item, index) => {
+        if (item.isCustom) {
+          let details = `${item.title}:  `;
+          Object.keys(item.customProperties).map(
+            (key) => (details += `${key}:${item.customProperties[key]} --- `),
+          );
+
+          customOrderDetails.push(details);
+        }
+
         let referenceObject = {
           _key: index.toString(),
           _ref: item._id,
@@ -59,15 +124,24 @@ export default async function handler(
         _type: "order",
         order_number: orderId.toString(),
         products: products,
+        custom_order_details: customOrderDetails,
         completedOrder: false,
       };
 
-      sanityClient
+      await sanityClient
         .create(newOrder)
         .then(() => {
           console.log("New Order Created");
         })
         .catch(console.error);
+
+      await Promise.all(
+        items.map(async (item) => {
+          if (item.isCustom) {
+            await createNewCustomProduct(item);
+          }
+        }),
+      );
     };
 
     try {

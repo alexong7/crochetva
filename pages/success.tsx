@@ -17,15 +17,17 @@ import { fetchProducts } from "@/utils/fetchProducts";
 import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
 import { fetchOrder } from "@/utils/fetchOrder";
-import Logo2 from "../public/Logo2.png"
+import Logo2 from "../public/Logo2.png";
+import { fetchCustomProducts } from "@/utils/fetchCustomProducts";
 
 interface Props {
   products: Product[];
   order: Order;
   checkoutSession: Stripe.Response<Stripe.Checkout.Session>;
+  customProducts: CustomOrderProduct[];
 }
 
-function Success({ products, order, checkoutSession }: Props) {
+function Success({ products, order, checkoutSession, customProducts }: Props) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [showOrderSummary, setShowOrderSummary] = useState(false);
@@ -48,8 +50,16 @@ function Success({ products, order, checkoutSession }: Props) {
     filteredProducts.push(foundProduct!);
   });
 
+  const hasCustomColor = (header: string, color: string) =>
+    header != null &&
+    header != undefined &&
+    header.length != 0 &&
+    color != null &&
+    color != undefined &&
+    color.length != 0;
+  console.log(filteredProducts);
 
-  console.log('Success - Order:', order)
+  console.log("Success - Order:", order);
   return (
     <div>
       <Head>
@@ -60,12 +70,7 @@ function Success({ products, order, checkoutSession }: Props) {
       <header className="mx-auto max-w-xl">
         <Link href="/">
           <div className="relative ml-4 h-24 w-16 cursor-pointer transition lg:hidden">
-            <Image
-              src={Logo2}
-              layout="fill"
-              objectFit="contain"
-              alt=""
-            />
+            <Image src={Logo2} layout="fill" objectFit="contain" alt="" />
           </div>
         </Link>
       </header>
@@ -77,12 +82,7 @@ function Success({ products, order, checkoutSession }: Props) {
         >
           <Link href="/">
             <div className="relative  ml-8 hidden h-40 w-20 cursor-pointer transition lg:inline-flex">
-              <Image
-                src={Logo2}
-                layout="fill"
-                objectFit="contain"
-                alt=""
-              />
+              <Image src={Logo2} layout="fill" objectFit="contain" alt="" />
             </div>
           </Link>
 
@@ -92,11 +92,13 @@ function Success({ products, order, checkoutSession }: Props) {
             </div>
             <div>
               <p className="text-sm text-gray-600">
-                Order #{checkoutSession?.metadata?.orderNumber || "(Refresh Page)"}
+                Order #
+                {checkoutSession?.metadata?.orderNumber || "(Refresh Page)"}
               </p>
               <h4 className="text-lg">
                 Thank you{" "}
-                {checkoutSession?.customer_details?.name?.split(' ')[0] || 'Guest'}
+                {checkoutSession?.customer_details?.name?.split(" ")[0] ||
+                  "Guest"}
               </h4>
             </div>
           </div>
@@ -173,29 +175,93 @@ function Success({ products, order, checkoutSession }: Props) {
             {showOrderSummaryCondition && (
               <div className="mx-auto max-w-xl divide-y border-gray-300 px-4 py-4 lg:mx-0 lg:max-w-lg lg:px-10 lg:py-16">
                 <div className="space-y-4 pb-4">
-                  {filteredProducts.map((product, index) => (
+                  {filteredProducts.map((product, index) => {
+                    if (
+                      product.isCustom ||
+                      product.title.toLowerCase().includes("custom")
+                    ) {
+                      return;
+                    }
                     // Main row container
-                    <div
-                      key={index}
-                      className="flex items-center space-x-4 text-sm font-medium"
-                    >
-                      {/* Image Box + Quantity */}
-                      <div className="relative flex h-16 w-16 items-center justify-center text-xs text-white">
-                        <div className="fit h-16 w-16  rounded-md">
-                          <Image
-                            src={urlFor(product.image[0]).url()}
-                            layout="fill"
-                            objectFit="contain"
-                            alt=""
-                          />
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-4 text-sm font-medium"
+                      >
+                        {/* Image Box + Quantity */}
+                        <div className="relative flex h-16 w-16 items-center justify-center text-xs text-white">
+                          <div className="fit h-16 w-16  rounded-md">
+                            <Image
+                              src={urlFor(product.image[0]).url()}
+                              layout="fill"
+                              objectFit="contain"
+                              alt=""
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-1 flex-col">
+                          {/*  Item Title & Price */}
+                          <div className="flex flex-1">
+                            <p className="flex-1">{product.title}</p>
+                            <p>{USDollar.format(product.price)}</p>
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
+                  {customProducts.map((product, index) => {
+                    // Main row container
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-4 text-sm font-medium"
+                      >
+                        {/* Image Box + Quantity */}
+                        <div className="relative flex h-16 w-16 items-center justify-center text-xs text-white">
+                          <div className="fit h-16 w-16  rounded-md">
+                            <Image
+                              src={urlFor(product.image).url()}
+                              layout="fill"
+                              objectFit="contain"
+                              alt=""
+                            />
+                          </div>
+                        </div>
 
-                      {/*  Item Title & Price */}
-                      <p className="flex-1">{product.title}</p>
-                      <p>{USDollar.format(product.price)}</p>
-                    </div>
-                  ))}
+                        <div className="flex flex-1 flex-col">
+                          {/*  Item Title & Price */}
+                          <div className="flex flex-1">
+                            <p className="flex-1">{product.title}</p>
+                            <p>{USDollar.format(product.price)}</p>
+                          </div>
+                          <div className="flex flex-1 items-center">
+                            <div>Options</div>
+                            <div className="flex flex-1 flex-col items-end ">
+                              {hasCustomColor(
+                                product.customColorHeader1,
+                                product.customColor1,
+                              ) && (
+                                <h4 className="text-[10px] text-gray-500">{`${product.customColorHeader1}: ${product.customColor1}`}</h4>
+                              )}
+                              {hasCustomColor(
+                                product.customColorHeader2,
+                                product.customColor2,
+                              ) && (
+                                <h4 className="text-[10px] text-gray-500">{`${product.customColorHeader2}: ${product.customColor2}`}</h4>
+                              )}{" "}
+                              {hasCustomColor(
+                                product.customColorHeader3,
+                                product.customColor3,
+                              ) && (
+                                <h4 className="text-[10px] text-gray-500">{`${product.customColorHeader3}: ${product.customColor3}`}</h4>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Pricing */}
@@ -240,9 +306,6 @@ function Success({ products, order, checkoutSession }: Props) {
 
 export default Success;
 
-const defaultImage =
-  "https://i.pinimg.com/originals/d7/14/54/d714540f9b3fc4127d14f00e3a084e36.png";
-
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
 }) => {
@@ -262,13 +325,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const orderNumber = checkoutSession.metadata?.orderNumber;
 
   const order = await fetchOrder(orderNumber!);
-
+  const customProducts = await fetchCustomProducts(orderNumber!);
 
   return {
     props: {
       products,
       order,
       checkoutSession,
+      customProducts,
     },
   };
 };

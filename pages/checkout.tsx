@@ -20,13 +20,16 @@ function Checkout({ parentProducts }: Props) {
   const basketTotal = useSelector(selectBasketTotal);
   const router = useRouter();
 
-  const DynamicCheckoutProduct = dynamic(() => import('../components/CheckoutProduct'), {
-    loading: () => <p>Loading...</p>,
-  })
+  const DynamicCheckoutProduct = dynamic(
+    () => import("../components/CheckoutProduct"),
+    {
+      loading: () => <p>Loading...</p>,
+    },
+  );
 
-  const DynamicHeader = dynamic(() => import('../components/Header'), {
+  const DynamicHeader = dynamic(() => import("../components/Header"), {
     loading: () => <p>Loading...</p>,
-  })
+  });
 
   // States
   // ------
@@ -68,7 +71,13 @@ function Checkout({ parentProducts }: Props) {
   };
 
   useEffect(() => {
+    let index = 0;
     const groupedItems = items.reduce((results, item) => {
+      if (item.isCustom) {
+        results[item._id + "__" + index.toString()] = [item];
+        index++;
+        return results;
+      }
       (results[item._id] = results[item._id] || []).push(item);
       return results;
     }, {} as { [key: string]: Product[] });
@@ -104,7 +113,7 @@ function Checkout({ parentProducts }: Props) {
               <DynamicCheckoutProduct
                 key={key}
                 items={items}
-                id={key}
+                id={items[0].isCustom ? key.split("__")[0] : key}
                 parentProducts={parentProducts}
               />
             ))}
@@ -153,7 +162,7 @@ function Checkout({ parentProducts }: Props) {
                   loading={loading}
                   title="Check Out"
                   width="w-full"
-                  onClick={createCheckoutSession}
+                  onClick={loading ? () => {} : createCheckoutSession}
                 />
               </div>
             </div>

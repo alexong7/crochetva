@@ -1,11 +1,11 @@
 import Head from "next/head";
 import { fetchCategories } from "../utils/fetchCategories";
-import { GetStaticProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import { fetchProducts } from "@/utils/fetchProducts";
 import Basket from "@/components/Basket";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { useEffect, useState } from "react";
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
 interface Props {
   categories: Category[];
@@ -20,16 +20,18 @@ export default function Home({ categories, parentProducts, products }: Props) {
 
   if (!mounted) return null;
 
+  const DynamicProductPanel = dynamic(
+    () => import("../components/ProductPanel"),
+    {
+      loading: () => <p>Loading...</p>,
+    },
+  );
 
-const DynamicProductPanel = dynamic(() => import('../components/ProductPanel'), {
-  loading: () => <p>Loading...</p>,
-})
+  const DynamicHeader = dynamic(() => import("../components/Header"), {
+    loading: () => <p>Loading...</p>,
+  });
 
-const DynamicHeader = dynamic(() => import('../components/Header'), {
-  loading: () => <p>Loading...</p>,
-})
-
-const DynamicLanding = dynamic(() => import('../components/Landing'))
+  const DynamicLanding = dynamic(() => import("../components/Landing"));
   return (
     <div>
       <Head>
@@ -47,20 +49,18 @@ const DynamicLanding = dynamic(() => import('../components/Landing'))
         <DynamicLanding />
       </main>
       <section className="relative z-40 -mt-[100vh] min-h-screen bg-[#fcf4f4]">
-        <DynamicProductPanel 
-            categories={categories}
-            parentProducts={parentProducts}
-            products={products}
+        <DynamicProductPanel
+          categories={categories}
+          parentProducts={parentProducts}
+          products={products}
         />
-        
       </section>
     </div>
   );
 }
 
 // Backend Code to Sanity
-export const getStaticProps: GetStaticProps<Props> = async (
-) => {
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const categories = await fetchCategories();
   const parentProducts = await fetchParentProducts();
   const products = await fetchProducts();

@@ -7,7 +7,8 @@ import Link from "next/link";
 import React, { Fragment, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
+import { useMediaQuery } from "react-responsive";
 
 interface Props {
   items: Product[];
@@ -30,10 +31,22 @@ function CheckoutProduct({ id, items, parentProducts }: Props) {
     dispatch(addToBasket(items[0]));
   };
 
+  const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1024px)" });
+
   const quantityOptions: number[] = [];
 
+  // Controls the Quantity Dropdown values.
+  // Currently 1 - 5
   for (let i = 1; i <= 5; i++) {
     quantityOptions.push(i);
+  }
+
+  // Get all the custom options if any
+  // for this product
+  let customOptions = new Map<string, string>();
+
+  for (const key in items[0].customProperties) {
+    customOptions.set(key, items[0].customProperties[key]);
   }
 
   const findParentSlug = () => {
@@ -75,80 +88,114 @@ function CheckoutProduct({ id, items, parentProducts }: Props) {
       <Link
         href={findParentSlug() != null ? `/products/${findParentSlug()}` : ""}
       >
-        <div className="relative mt-4 h-44 w-44">
-          <Image
-            src={urlFor(items[0].image[0]).url()}
-            alt=""
-            layout="fill"
-            objectFit="contain"
-          />
+        <div className="flex items-center justify-between">
+          <div className="relative mt-4 h-44 w-44">
+            <Image
+              src={urlFor(items[0].image[0]).url()}
+              alt=""
+              layout="fill"
+              objectFit="contain"
+            />
+          </div>
         </div>
       </Link>
 
       {/* Title, Quantitiy, Product details */}
-      <div className="flex flex-1 items-end lg:items-center">
-        <div className="flex-1 space-y-4">
-          <div className="flex flex-col gap-x-8 text-xl lg:flex-row lg:text-2xl">
-            <Link
-              href={
-                findParentSlug() != null ? `/products/${findParentSlug()}` : ""
-              }
-            >
-              <h4 className="font-semibold lg:w-96">{items[0].title}</h4>
-            </Link>
-            {/* <p className="flex items-end gap-x-1 font-semibold">
-              {`Qty: ${items.length}`}
-            </p> */}
-            <div className="relative flex-col items-end  gap-x-1 font-semibold">
-              <Menu>
-                <Menu.Button>
-                  <div className="flex items-center gap-x-1">
-                    <p>{quantity}</p>
-                    <ChevronDownIcon className="  h-5 w-5 text-blue-500 hover:text-blue-600" />
-                  </div>
-                </Menu.Button>
+      <div className="flex flex-1 flex-col items-end justify-center lg:items-center lg:space-y-2">
+        <div className="flex w-full">
+          <div className="flex-1 space-y-4">
+            <div className="flex flex-col gap-x-8 text-xl lg:flex-row lg:text-2xl">
+              <Link
+                href={
+                  findParentSlug() != null
+                    ? `/products/${findParentSlug()}`
+                    : ""
+                }
+              >
+                <h4 className="font-semibold lg:w-96">{items[0].title}</h4>
+              </Link>
 
-                <Menu.Items className="absolute z-50 mt-2 flex w-12 flex-col items-center justify-center space-y-1 divide-y divide-slate-300 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-10 focus:outline-none">
-                  {quantityOptions.map((i) => {
-                    return (
-                      <Menu.Item key={i}>
-                        {({ active }) => (
-                          <button
-                            className={`${
-                              active
-                                ? "bg-violet-500 text-white"
-                                : "text-gray-900"
-                            }  w-full  px-2 py-2`}
-                            onClick={() => handleQuantitySelection(i)}
-                          >
-                            {i}
-                          </button>
-                        )}
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu.Items>
-              </Menu>
+              <div className="relative flex-col items-end  gap-x-1 font-semibold">
+                <Menu>
+                  <Menu.Button>
+                    <div className="flex items-center gap-x-1">
+                      <p>{quantity}</p>
+                      <ChevronDownIcon className="  h-5 w-5 text-blue-500 hover:text-blue-600" />
+                    </div>
+                  </Menu.Button>
+
+                  <Menu.Items className="absolute z-50 mt-2 flex w-12 flex-col items-center justify-center space-y-1 divide-y divide-slate-300 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-10 focus:outline-none">
+                    {quantityOptions.map((i) => {
+                      return (
+                        <Menu.Item key={i}>
+                          {({ active }) => (
+                            <button
+                              className={`${
+                                active
+                                  ? "bg-violet-500 text-white"
+                                  : "text-gray-900"
+                              }  w-full  px-2 py-2`}
+                              onClick={() => handleQuantitySelection(i)}
+                            >
+                              {i}
+                            </button>
+                          )}
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu.Items>
+                </Menu>
+              </div>
             </div>
+          </div>
+
+          {/* Total, Remove on RH side */}
+          <div className="flex flex-col items-end">
+            <h4 className="text-xl font-semibold lg:text-2xl">
+              {USDollar.format(
+                items.reduce((total, items) => total + items.price, 0),
+              )}
+            </h4>
+
+            <button
+              onClick={removeItemFromBasket}
+              className="text-blue-500 hover:underline"
+            >
+              Remove
+            </button>
           </div>
         </div>
 
-        {/* Total, Remove on RH side */}
-        <div className="flex flex-col items-end space-y-4">
-          <h4 className="text-xl font-semibold lg:text-2xl">
-            {USDollar.format(
-              items.reduce((total, items) => total + items.price, 0),
-            )}
-          </h4>
-
-          <button
-            onClick={removeItemFromBasket}
-            className="text-blue-500 hover:underline"
-          >
-            Remove
-          </button>
-        </div>
+        {/* Custom Product Options for Non-Mobile */}
+        {items[0].isCustom && !isTabletOrMobile && (
+          <div className="flex w-full ">
+            <div className="flex-1 text-xl font-semibold text-black">
+              Options
+            </div>
+            <div className="flex flex-col items-end">
+              {Object.keys(items[0].customProperties).map((key, index) => (
+                <p key={index} className="text-sm text-gray-500">
+                  {`${key}: ${items[0].customProperties[key]}`}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Custom Product Options for Mobile View */}
+      {items[0].isCustom && isTabletOrMobile && (
+        <div className="flex flex-1 items-center">
+          <div className="flex-1 text-xl font-semibold text-black">Options</div>
+          <div className="flex flex-col items-end">
+            {Object.keys(items[0].customProperties).map((key, index) => (
+              <p key={index} className="text-sm text-gray-500">
+                {`${key}: ${items[0].customProperties[key]}`}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -49,5 +49,15 @@ export default {
       title: 'Completed Order',
       type: 'boolean',
     },
+    {
+      name: 'custom_order_details',
+      title: 'Custom Order Details',
+      type: 'array',
+      of: [
+        {
+          type: 'string',
+        },
+      ],
+    },
   ],
 }

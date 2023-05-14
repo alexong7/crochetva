@@ -6,14 +6,12 @@ import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
 import { fetchProductById } from "@/utils/fetchProductById";
 import { sendOrderConfirmation } from "@/utils/sendOrderConfirmation";
+import { fetchCustomProducts } from "@/utils/fetchCustomProducts";
 
 const fufillOrder = async (session, order) => {
   console.log("fulfilling order");
 
-  console.log("session metadata", session.metadata);
-
   const docId = order._id;
-  console.log("fufillOrder docId", docId);
 
   // Perform an Update based on the docID for the given Order
   sanityClient
@@ -37,7 +35,6 @@ const decrementQuantity = async (product) => {
   console.log("Decrementing Product Quantity");
 
   const productId = product._ref;
-  console.log("productID", productId);
 
   // Perform a patch to decrement the product quantity by 1
   sanityClient
@@ -54,7 +51,7 @@ const decrementQuantity = async (product) => {
     });
 };
 
-// Sends an email order confirmation to the customer and to our 
+// Sends an email order confirmation to the customer and to our
 // internal email so we are notified of a new order
 const orderConfirmation = async (session, order) => {
   const data = {};
@@ -70,23 +67,47 @@ const orderConfirmation = async (session, order) => {
   const custName = session.customer_details.name;
 
   const products = [];
+  const customProducts = [];
 
-  console.log(order.products);
-
+  // Add all non custom products
   await Promise.all(
     order.products.map(async (p) => {
       const product = await fetchProductById(p._ref);
-      products.push({
-        title: product.title,
-        image: urlFor(product.image[0]).url(),
-        price: product.price,
-      });
+      if (
+        !product.isCustom ||
+        !product.title.toLowerCase().includes("custom")
+      ) {
+        products.push({
+          title: product.title,
+          image: urlFor(product.image[0]).url(),
+          price: product.price,
+        });
+      }
     }),
   );
+
+  // Fetch the custom products that may be
+  // associated with this order
+  const fetchedCustomProducts = await fetchCustomProducts(orderNumber);
+
+  fetchedCustomProducts.map((product) => {
+    customProducts.push({
+      title: product.title,
+      image: urlFor(product.image).url(),
+      price: product.price,
+      customColorHeader1: product.customColorHeader1,
+      customColor1: product.customColor1,
+      customColorHeader2: product.customColorHeader2,
+      customColor2: product.customColor2,
+      customColorHeader3: product.customColorHeader3,
+      customColor3: product.customColor3,
+    });
+  });
 
   data.email = email;
   data.orderNumber = orderNumber;
   data.products = products;
+  data.customProducts = customProducts;
   data.subTotal = subTotal;
   data.total = total;
   data.tax = tax;
@@ -101,14 +122,12 @@ const orderConfirmation = async (session, order) => {
   // Send to internal email
   data.internal = true;
   await sendOrderConfirmation(data);
-
 };
 
 export default async function handler(req, res) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   if (req.method === "POST") {
-    console.log('inside post webhook');
     const rawBody = await buffer(req);
     const sig = req.headers["stripe-signature"];
     const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
@@ -118,7 +137,11 @@ export default async function handler(req, res) {
     try {
       if (!sig || !endpointSecret) return;
 
-      event = stripe.webhooks.constructEvent(rawBody.toString(), sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(
+        rawBody.toString(),
+        sig,
+        endpointSecret,
+      );
     } catch (error) {
       console.log(`Webhook Error ${error.message}`);
       return res.status(400).send(`Webhook Error ${error.message}`);
@@ -128,8 +151,6 @@ export default async function handler(req, res) {
       const session = event?.data?.object;
       const order = await fetchOrder(session.metadata.orderNumber);
 
-      console.log("Order", order);
-
       await Promise.all(
         order.products.map(async (product) => {
           await decrementQuantity(product);
@@ -137,18 +158,17 @@ export default async function handler(req, res) {
       );
 
       // Fufill order
-      await fufillOrder(session, order)
-      .catch((err) =>
+      await fufillOrder(session, order).catch((err) =>
         res.status(400).send(`Webhook Error ${err.message}`),
       );
 
       // Send order confirmation to customer and to
       // our internal email
       await orderConfirmation(session, order)
-      .then(() => res.status(200).end())
-      .catch((err) =>
-        res.status(400).send(`Order Confirmation Error ${err.message}`),
-      );
+        .then(() => res.status(200).end())
+        .catch((err) =>
+          res.status(400).send(`Order Confirmation Error ${err.message}`),
+        );
     }
   }
 }

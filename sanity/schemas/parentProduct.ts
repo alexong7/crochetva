@@ -49,5 +49,56 @@ export default {
       title: 'Description',
       type: 'blockContent',
     },
+    {
+      name: 'customColorHeader1',
+      title: 'Custom Color Header 1',
+      type: 'reference',
+      to: [{type: 'customColorLabel'}],
+    },
+    {
+      name: 'customColors1',
+      title: 'Custom Colors 1',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'color'}]
+        }
+      ]
+    },
+    {
+      name: 'customColorHeader2',
+      title: 'Custom Color Header 2',
+      type: 'reference',
+      to: [{type: 'customColorLabel'}],
+    },
+    {
+      name: 'customColors2',
+      title: 'Custom Colors 2',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'color'}]
+        }
+      ]
+    },
+    {
+      name: 'customColorHeader3',
+      title: 'Custom Color Header 3',
+      type: 'reference',
+      to: [{type: 'customColorLabel'}],
+    },
+    {
+      name: 'customColors3',
+      title: 'Custom Colors 3',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'color'}]
+        }
+      ]
+    },
   ],
 }
