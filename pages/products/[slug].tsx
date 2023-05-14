@@ -70,7 +70,7 @@ function ProductScreen({
   const inventoryDisabledFlag = flags?.find(
     (flag) => flag.name === DISABLE_INVENTORY_FLAG,
   );
-  const customOrdersDisabledFlag = flags.find(
+  const customOrdersDisabledFlag = flags?.find(
     (flag) => flag.name === DISABLE_CUSTOM_FLAG,
   );
 
@@ -167,7 +167,7 @@ function ProductScreen({
     }
 
     // Create a new product so that we can populate
-    // custom properties to send to the next page.
+    // custom properties to send to the checkout page.
     // This does not get persisted to the database
     let product: Product = {
       _id: customProduct._id,
