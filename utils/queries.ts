@@ -46,3 +46,10 @@ export const queryCustomColorLabels = groq`
   _id,
   name
 }`;
+
+export const queryFlags = groq`
+*[_type == "flag"]{
+    _id,
+    name,
+    enabled
+  }`;

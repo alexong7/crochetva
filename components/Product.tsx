@@ -11,9 +11,10 @@ import { useDispatch } from "react-redux";
 type Props = {
   product: ParentProduct;
   childProducts: Product[];
+  inventoryEnabled: boolean;
 };
 
-function Product({ product, childProducts }: Props) {
+function Product({ product, childProducts, inventoryEnabled }: Props) {
   const dispatch = useDispatch();
 
   const addItemToBasket = () => {
@@ -68,7 +69,8 @@ function Product({ product, childProducts }: Props) {
             <p className="font-medium">{product.title}</p>
             {currentSelectedProduct != null &&
               (currentSelectedProduct?.quantity! <= 0 ||
-                currentSelectedProduct?.quantity == null) && (
+                currentSelectedProduct?.quantity == null ||
+                !inventoryEnabled) && (
                 <p className="text-[16px] text-gray-600">(Out of stock)</p>
               )}
 
@@ -115,7 +117,8 @@ function Product({ product, childProducts }: Props) {
             onClick={(e) => {
               currentSelectedProduct != null &&
               (currentSelectedProduct?.quantity! <= 0 ||
-                currentSelectedProduct?.quantity == null)
+                currentSelectedProduct?.quantity == null ||
+                !inventoryEnabled)
                 ? () => {}
                 : addItemToBasket();
               e.stopPropagation();
@@ -124,7 +127,8 @@ function Product({ product, childProducts }: Props) {
           >
             {currentSelectedProduct != null &&
             (currentSelectedProduct?.quantity! <= 0 ||
-              currentSelectedProduct?.quantity == null) ? (
+              currentSelectedProduct?.quantity == null ||
+              !inventoryEnabled) ? (
               <XCircleIcon className="h-10 w-10 text-white" />
             ) : (
               <ShoppingCartIcon className="h-5 w-5 text-white" />

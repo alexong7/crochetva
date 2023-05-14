@@ -9,6 +9,7 @@ import faq from './faq'
 import color from './color'
 import customColorLabel from './customColorLabel'
 import customOrderProduct from './customOrderProduct'
+import flags from './flags'
 
 export const schemaTypes = [
   category,
@@ -23,4 +24,5 @@ export const schemaTypes = [
   color,
   customColorLabel,
   customOrderProduct,
+  flags,
 ]

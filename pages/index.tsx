@@ -6,19 +6,31 @@ import Basket from "@/components/Basket";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { fetchFlags } from "@/utils/fetchFlags";
+import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 
 interface Props {
   categories: Category[];
   parentProducts: ParentProduct[];
   products: Product[];
+  flags: Flag[];
 }
 
-export default function Home({ categories, parentProducts, products }: Props) {
+export default function Home({
+  categories,
+  parentProducts,
+  products,
+  flags,
+}: Props) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
+
+  const inventoryDisabledFlag = flags.find(
+    (flag) => flag.name === DISABLE_INVENTORY_FLAG,
+  );
 
   const DynamicProductPanel = dynamic(
     () => import("../components/ProductPanel"),
@@ -53,6 +65,7 @@ export default function Home({ categories, parentProducts, products }: Props) {
           categories={categories}
           parentProducts={parentProducts}
           products={products}
+          inventoryEnabled={!inventoryDisabledFlag?.enabled ?? true}
         />
       </section>
     </div>
@@ -64,12 +77,14 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const categories = await fetchCategories();
   const parentProducts = await fetchParentProducts();
   const products = await fetchProducts();
+  const flags = await fetchFlags();
 
   return {
     props: {
       categories,
       parentProducts,
       products,
+      flags,
     },
 
     // Next.js will attempt to regenerate the page:

@@ -20,15 +20,18 @@ import dynamic from "next/dynamic";
 import {
   queryColors,
   queryCustomColorLabels,
+  queryFlags,
   queryParentProducts,
   queryProducts,
 } from "@/utils/queries";
+import { DISABLE_CUSTOM_FLAG, DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 
 interface Props {
   products: Product[];
   parentProducts: ParentProduct[];
   colors: Color[];
   customColorLabels: CustomColorLabel[];
+  flags: Flag[];
 }
 
 const DynamicImageGallery = dynamic(() => import("react-image-gallery"), {
@@ -40,6 +43,7 @@ function ProductScreen({
   parentProducts,
   customColorLabels,
   colors,
+  flags,
 }: Props) {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -61,6 +65,17 @@ function ProductScreen({
     (product) =>
       product.parentProduct._ref === parentProduct?._id && product.isCustom,
   );
+
+  /// Flags
+  const inventoryDisabledFlag = flags?.find(
+    (flag) => flag.name === DISABLE_INVENTORY_FLAG,
+  );
+  const customOrdersDisabledFlag = flags.find(
+    (flag) => flag.name === DISABLE_CUSTOM_FLAG,
+  );
+
+  const inventoryDisabled = inventoryDisabledFlag?.enabled ?? false;
+  const customOrdersDisabled = customOrdersDisabledFlag?.enabled ?? false;
 
   /// States
   const [currentSelectedProduct, setCurrentSelectedProduct] =
@@ -197,11 +212,14 @@ function ProductScreen({
     if (customizeOptions) {
       return customProduct === undefined ||
         customProduct === null ||
-        customProduct.quantity <= 0
+        customProduct.quantity <= 0 ||
+        customOrdersDisabled
         ? "Out of Stock"
         : "Add to Bag";
     }
-    return currentProductQuantity <= 0 ? "Out of Stock" : "Add to Bag";
+    return currentProductQuantity <= 0 || inventoryDisabled
+      ? "Out of Stock"
+      : "Add to Bag";
   };
 
   childProducts?.reverse();
@@ -522,15 +540,25 @@ function ProductScreen({
                       if (
                         customProduct === undefined ||
                         customProduct === null ||
-                        customProduct?.quantity <= 0
-                      )
+                        customProduct?.quantity <= 0 ||
+                        customOrdersDisabled
+                      ) {
+                        toast.error(`Out of Stock!`, {
+                          position: "bottom-center",
+                        });
                         return () => {};
+                      }
 
                       return addCustomItemToBasket();
                     }
 
                     // Regular Product logic
-                    if (currentProductQuantity <= 0) return () => {};
+                    if (currentProductQuantity <= 0 || inventoryDisabled) {
+                      toast.error(`Out of Stock!`, {
+                        position: "bottom-center",
+                      });
+                      return () => {};
+                    }
 
                     return addItemToBasket(currentSelectedProduct!);
                   }}
@@ -583,6 +611,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const parentProducts = await sanityClient.fetch(queryParentProducts);
   const colors = await sanityClient.fetch(queryColors);
   const customColorLabels = await sanityClient.fetch(queryCustomColorLabels);
+  const flags = await sanityClient.fetch(queryFlags);
 
   return {
     props: {
@@ -590,6 +619,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       parentProducts,
       colors,
       customColorLabels,
+      flags,
     },
     revalidate: 30,
   };

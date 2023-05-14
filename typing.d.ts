@@ -188,3 +188,13 @@ interface CustomColorLabel {
   _type: "customColorLabel";
   name: string;
 }
+
+interface Flag {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "flag";
+  name: string;
+  enabled: boolean;
+}

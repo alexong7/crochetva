@@ -6,9 +6,15 @@ type Props = {
   categories: Category[];
   parentProducts: ParentProduct[];
   products: Product[];
+  inventoryEnabled: boolean;
 };
 
-function ProductPanel({ categories, parentProducts, products }: Props) {
+function ProductPanel({
+  categories,
+  parentProducts,
+  products,
+  inventoryEnabled,
+}: Props) {
   const slugToIndex: { [slug: string]: number } = {};
 
   // Loop through the categories, pair each slug to the curernt index.
@@ -22,8 +28,6 @@ function ProductPanel({ categories, parentProducts, products }: Props) {
   const showProducts = (category_slug: string) => {
     let filteredProducts = parentProducts;
     let alreadyShownProducts = new Set();
-
-    console.log("categories", categories);
 
     // If we're not showing All Products, filter
     // through the parent products based on category.
@@ -44,6 +48,7 @@ function ProductPanel({ categories, parentProducts, products }: Props) {
             product={product}
             key={product._id}
             childProducts={products}
+            inventoryEnabled={inventoryEnabled}
           />
         );
       }
@@ -95,10 +100,6 @@ function ProductPanel({ categories, parentProducts, products }: Props) {
               );
             }
           })}
-
-          {/* <Tab.Panel className="tabPanel">{showProducts(1)}</Tab.Panel>
-          <Tab.Panel className="tabPanel">{showProducts(2)}</Tab.Panel>
-          <Tab.Panel className="tabPanel">{showProducts(3)}</Tab.Panel> */}
         </Tab.Panels>
       </Tab.Group>
     </div>
