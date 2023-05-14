@@ -1,8 +1,10 @@
 import Basket from "@/components/Basket";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
+import { sanityClient } from "@/lib/sanity";
 import { fetchFlags } from "@/utils/fetchFlags";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
+import { queryFlags } from "@/utils/queries";
 import { GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -45,7 +47,7 @@ function AllProducts({ products, parentProducts, flags }: Props) {
         <p className="text-4xl font-medium  tracking-[4px] underline decoration-[#FFCEEE] underline-offset-2 md:text-5xl">
           All Products
         </p>
-        <div className="tabPanel  ">
+        <div className="tabPanel">
           {parentProducts.map((product, index) => (
             <Product
               key={index}
@@ -65,7 +67,7 @@ export default AllProducts;
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const products = await fetchProducts();
   const parentProducts = await fetchParentProducts();
-  const flags = await fetchFlags();
+  const flags = await sanityClient.fetch(queryFlags);
 
   return {
     props: {
