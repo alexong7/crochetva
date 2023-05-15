@@ -35,7 +35,8 @@ function ProductPanel({
     if (category_slug != ALL_PRODUCTS_SLUG) {
       filteredProducts = parentProducts.filter(
         (product) =>
-          product.category._ref === categories[slugToIndex[category_slug]]._id,
+          product?.category?._ref ===
+          categories[slugToIndex[category_slug]]._id,
       );
     }
 

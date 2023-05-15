@@ -41,6 +41,13 @@ export const queryColors = groq`
     name
   }`;
 
+export const queryCategories = groq`
+*[_type == "category"]{
+  _id ,
+  title,
+  slug,
+}`;
+
 export const queryCustomColorLabels = groq`
 *[_type == "customColorLabel"]{
   _id,

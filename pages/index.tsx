@@ -9,7 +9,13 @@ import dynamic from "next/dynamic";
 import { fetchFlags } from "@/utils/fetchFlags";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 import { sanityClient } from "@/lib/sanity";
-import { queryFlags } from "@/utils/queries";
+import {
+  queryCategories,
+  queryFlags,
+  queryParentProducts,
+  queryProducts,
+} from "@/utils/queries";
+import sanityCli from "@/sanity/sanity.cli";
 
 interface Props {
   categories: Category[];
@@ -76,9 +82,9 @@ export default function Home({
 
 // Backend Code to Sanity
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const categories = await fetchCategories();
-  const parentProducts = await fetchParentProducts();
-  const products = await fetchProducts();
+  const categories = await sanityClient.fetch(queryCategories);
+  const parentProducts = await sanityClient.fetch(queryParentProducts);
+  const products = await sanityClient.fetch(queryProducts);
   const flags = await sanityClient.fetch(queryFlags);
 
   return {

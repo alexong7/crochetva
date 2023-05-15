@@ -1,10 +1,15 @@
 import Basket from "@/components/Basket";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 import { sanityClient } from "@/lib/sanity";
+import sanityCli from "@/sanity/sanity.cli";
 import { fetchFlags } from "@/utils/fetchFlags";
 import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { fetchProducts } from "@/utils/fetchProducts";
-import { queryFlags } from "@/utils/queries";
+import {
+  queryFlags,
+  queryParentProducts,
+  queryProducts,
+} from "@/utils/queries";
 import { GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -65,8 +70,8 @@ function AllProducts({ products, parentProducts, flags }: Props) {
 export default AllProducts;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const products = await fetchProducts();
-  const parentProducts = await fetchParentProducts();
+  const products = await sanityClient.fetch(queryProducts);
+  const parentProducts = await sanityClient.fetch(queryParentProducts);
   const flags = await sanityClient.fetch(queryFlags);
 
   return {
