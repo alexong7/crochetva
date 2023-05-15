@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { fetchFlags } from "@/utils/fetchFlags";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
+import { sanityClient } from "@/lib/sanity";
+import { queryFlags } from "@/utils/queries";
 
 interface Props {
   categories: Category[];
@@ -77,7 +79,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const categories = await fetchCategories();
   const parentProducts = await fetchParentProducts();
   const products = await fetchProducts();
-  const flags = await fetchFlags();
+  const flags = await sanityClient.fetch(queryFlags);
 
   return {
     props: {

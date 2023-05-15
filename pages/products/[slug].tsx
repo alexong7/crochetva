@@ -621,7 +621,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       customColorLabels,
       flags,
     },
-    revalidate: 30,
+    revalidate: 10,
   };
 };
 
