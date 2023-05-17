@@ -5,6 +5,7 @@ import { GetStaticProps } from "next";
 import { groq } from "next-sanity";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 type Props = {
@@ -48,12 +49,18 @@ function About({ aboutUs }: Props) {
                 />
               </div>
               <div className=" px-0">
-                <h4
-                  className="text-center text-2xl font-semibold tracking-[5px] underline decoration-[#FFCEEE] 
-              md:text-3xl"
+                <Link
+                  href={
+                    section.name === "Alex" ? "https://alexong.io/" : "/about"
+                  }
                 >
-                  {section.name}
-                </h4>
+                  <h4
+                    className="text-center text-2xl font-semibold tracking-[5px] underline decoration-[#FFCEEE] 
+                  md:text-3xl"
+                  >
+                    {section.name}
+                  </h4>
+                </Link>
 
                 <div className="mt-4 px-8 md:w-[400px] lg:w-[700px]">
                   <div className="text-[14px] md:text-[16px] lg:text-[17px]">
@@ -73,13 +80,13 @@ function About({ aboutUs }: Props) {
 
 export default About;
 
-export const getStaticProps: GetStaticProps<Props> = async () => {  
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const query = groq`
   *[_type == "about_us"]{
     ...
   }`;
 
-  const aboutUs = await sanityClient.fetch(query)
+  const aboutUs = await sanityClient.fetch(query);
 
   return {
     props: {
