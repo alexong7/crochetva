@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { queryShipping } from "@/utils/queries";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { urlFor } from "../../lib/sanity";
@@ -145,6 +146,8 @@ export default async function handler(
     };
 
     try {
+      const shipping: Shipping = await sanityClient.fetch(queryShipping);
+
       // Create Checkout Sessions from body params
       const params: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ["card"],
@@ -161,11 +164,20 @@ export default async function handler(
           {
             shipping_rate_data: {
               type: "fixed_amount",
-              fixed_amount: { amount: 799, currency: "usd" },
+              fixed_amount: {
+                amount: (shipping?.shipping_rate ?? 7.99) * 100,
+                currency: "usd",
+              },
               display_name: "Standard Shipping",
               delivery_estimate: {
-                minimum: { unit: "business_day", value: 7 },
-                maximum: { unit: "business_day", value: 10 },
+                minimum: {
+                  unit: "business_day",
+                  value: shipping?.min_days ?? 7,
+                },
+                maximum: {
+                  unit: "business_day",
+                  value: shipping?.max_days ?? 10,
+                },
               },
             },
           },

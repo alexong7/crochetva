@@ -1,12 +1,8 @@
 import Head from "next/head";
-import { fetchCategories } from "../utils/fetchCategories";
 import { GetServerSideProps, GetStaticProps } from "next";
-import { fetchProducts } from "@/utils/fetchProducts";
 import Basket from "@/components/Basket";
-import { fetchParentProducts } from "@/utils/fetchParentProducts";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { fetchFlags } from "@/utils/fetchFlags";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 import { sanityClient } from "@/lib/sanity";
 import {
@@ -15,7 +11,6 @@ import {
   queryParentProducts,
   queryProducts,
 } from "@/utils/queries";
-import sanityCli from "@/sanity/sanity.cli";
 
 interface Props {
   categories: Category[];

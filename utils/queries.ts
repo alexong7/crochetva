@@ -60,3 +60,11 @@ export const queryFlags = groq`
     name,
     enabled
   }`;
+
+export const queryShipping = groq`
+*[_type == "shipping"]{
+    _id,
+    min_days,
+    max_days,
+    shipping_rate
+  }[0]`;

@@ -198,3 +198,14 @@ interface Flag {
   name: string;
   enabled: boolean;
 }
+
+interface Shipping {
+  _id: string;
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  _type: "shipping";
+  min_days: number;
+  max_days: number;
+  shipping_rate: number;
+}

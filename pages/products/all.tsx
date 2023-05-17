@@ -1,10 +1,6 @@
 import Basket from "@/components/Basket";
 import { DISABLE_INVENTORY_FLAG } from "@/constants/flags";
 import { sanityClient } from "@/lib/sanity";
-import sanityCli from "@/sanity/sanity.cli";
-import { fetchFlags } from "@/utils/fetchFlags";
-import { fetchParentProducts } from "@/utils/fetchParentProducts";
-import { fetchProducts } from "@/utils/fetchProducts";
 import {
   queryFlags,
   queryParentProducts,
