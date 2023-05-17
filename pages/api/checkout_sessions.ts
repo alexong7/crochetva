@@ -39,7 +39,6 @@ export default async function handler(
 
       metadata.orderNumber = orderId;
 
-      console.log(metadata.orderNumber);
       return metadata;
     };
 

@@ -57,9 +57,7 @@ function Success({ products, order, checkoutSession, customProducts }: Props) {
     color != null &&
     color != undefined &&
     color.length != 0;
-  console.log(filteredProducts);
 
-  console.log("Success - Order:", order);
   return (
     <div>
       <Head>
@@ -320,7 +318,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const checkoutSession = await stripe.checkout.sessions.retrieve(
     sessionId?.toString()!,
   );
-  console.log("checkout session", checkoutSession);
 
   const orderNumber = checkoutSession.metadata?.orderNumber;
 

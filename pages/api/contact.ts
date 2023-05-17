@@ -10,7 +10,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  console.log("in send contact form");
   if (req.method === "POST") {
     const data = req.body;
 

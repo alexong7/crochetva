@@ -10,8 +10,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>,
 ) {
-  console.log("in order confirmation");
-  console.log(req.body);
   if (req.method === "POST") {
     const data = req.body;
 
@@ -45,7 +43,6 @@ export default async function handler(
 // Generates the dynamic fields for our HTML template and returns
 // a String of the html
 const generateEmailContent = (data: any) => {
-  console.log("made it to generateEmailContent");
   // General Data
   const orderNumber: string = data.orderNumber;
   const products: any = data.products;
