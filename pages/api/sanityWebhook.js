@@ -1,8 +1,10 @@
+import { buffer } from "micro";
+import { fetchOrder } from "@/utils/fetchOrder";
 import { urlFor } from "@/lib/sanity";
-import Stripe from "stripe";
 
+import Stripe from "stripe";
 import { fetchProductById } from "@/utils/fetchProductById";
-import { sendOrderShippedConfirmation } from "@utils/sendOrderShippedConfirmation";
+import { sendOrderShippedConfirmation } from "@/utils/sendOrderShippedConfirmation";
 import { fetchCustomProducts } from "@/utils/fetchCustomProducts";
 
 // Sends an email order confirmation to the customer and to our
