@@ -18,12 +18,10 @@ export default async function handler(
       return res.status(400).json({ message: "At least one field null" });
     }
 
-    const internal: boolean = data.internal ?? false;
-
     try {
       await transporter.sendMail({
         from: process.env.EMAIL,
-        to: internal ? process.env.EMAIL : data.email,
+        to: data.email,
         subject: "Your order is on it's way!",
         text: `Your order is on it's way! Tracking Number: ${data.trackingNumber}`,
         ...generateEmailContent(data),
