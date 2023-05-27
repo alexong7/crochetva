@@ -2,7 +2,7 @@ import { urlFor } from "@/lib/sanity";
 import Stripe from "stripe";
 
 import { fetchProductById } from "@/utils/fetchProductById";
-import { sendOrderConfirmation } from "@/utils/sendOrderConfirmation";
+import { sendOrderShippedConfirmation } from "@utils/sendOrderShippedConfirmation";
 import { fetchCustomProducts } from "@/utils/fetchCustomProducts";
 
 // Sends an email order confirmation to the customer and to our
