@@ -21,6 +21,7 @@ const fufillOrder = async (session, order) => {
       amount: session.amount_total / 100,
       email: session.customer_details.email,
       completedOrder: true,
+      stripe_checkout_session_id: session.id,
     })
     .commit()
     .then((updatedOrder) => {
@@ -150,6 +151,8 @@ export default async function handler(req, res) {
     if (event?.type === "checkout.session.completed") {
       const session = event?.data?.object;
       const order = await fetchOrder(session.metadata.orderNumber);
+
+      console.log("session", session);
 
       await Promise.all(
         order.products.map(async (product) => {

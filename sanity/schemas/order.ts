@@ -40,6 +40,11 @@ export default {
       type: 'string',
     },
     {
+      name: 'order_shipped',
+      title: 'Order Shipped',
+      type: 'boolean',
+    },
+    {
       name: 'shipping_carrier',
       title: 'Shipping Carrier',
       type: 'string',
@@ -48,6 +53,11 @@ export default {
       name: 'completedOrder',
       title: 'Completed Order',
       type: 'boolean',
+    },
+    {
+      name: 'stripe_checkout_session_id',
+      title: 'Stripe Checkout Session ID',
+      type: 'string',
     },
     {
       name: 'custom_order_details',
