@@ -81,7 +81,6 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     console.log("req body", req.body);
 
-    console.log("rawBody", rawBody);
     const stripeCheckoutSessionId = req.body.stripe_checkout_session_id;
     const trackingNumber = req.body.tracking_number;
     const order = await fetchOrder(req.body.order_number);
