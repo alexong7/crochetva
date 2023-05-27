@@ -79,19 +79,19 @@ const orderShippedConfirmation = async (session, order, trackingNumber) => {
 export default async function handler(req, res) {
   console.log("in shipping webhook");
   if (req.method === "POST") {
-    const rawBody = await buffer(req);
+    console.log("req body", req.body);
 
     console.log("rawBody", rawBody);
-    const stripeCheckoutSessionId = rawBody.stripe_checkout_session_id;
-    const trackingNumber = rawBody.tracking_number;
-    const order = await fetchOrder(rawBody.order_number);
+    const stripeCheckoutSessionId = req.body.stripe_checkout_session_id;
+    const trackingNumber = req.body.tracking_number;
+    const order = await fetchOrder(req.body.order_number);
 
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2022-11-15",
     });
 
     const checkoutSession = await stripe.checkout.sessions.retrieve(
-      stripeCheckoutSessionId?.toString(),
+      stripeCheckoutSessionId.toString(),
     );
 
     await orderShippedConfirmation(checkoutSession, order, trackingNumber)
@@ -104,7 +104,6 @@ export default async function handler(req, res) {
 
 export const config = {
   api: {
-    bodyParser: false,
     externalResolver: true,
   },
 };
