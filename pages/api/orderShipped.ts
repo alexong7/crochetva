@@ -24,8 +24,8 @@ export default async function handler(
       await transporter.sendMail({
         from: process.env.EMAIL,
         to: internal ? process.env.EMAIL : data.email,
-        subject: internal ? "New Order!" : "Thanks for your order!",
-        text: "We've received your order and are working on getting it to your front door.",
+        subject: "Your order is on it's way!",
+        text: `Your order is on it's way! Tracking Number: ${data.trackingNumber}`,
         ...generateEmailContent(data),
       });
     } catch (error: any) {
