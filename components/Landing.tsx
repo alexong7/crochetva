@@ -2,12 +2,12 @@ import React from "react";
 import Image from "next/image";
 import Button from "./Button";
 import Link from "next/link";
-import landingImage from "../public/Ava-9.jpg"
+import landingImage from "../public/Landing.jpg";
 
 function Landing() {
   return (
     <section
-      className="sticky top-0 mx-auto flex h-screen items-center justify-between md:justify-around xl:justify-center xl:space-x-20 px-6
+      className="sticky top-0 mx-auto flex h-screen items-center justify-between px-6 md:justify-around xl:justify-center xl:space-x-20
         "
     >
       {/* Landing Text */}
@@ -39,11 +39,16 @@ function Landing() {
       transition-all duration-500 md:inline
       md:h-[450px] md:w-[450px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]"
       >
-        <Image src={landingImage} alt="" layout="fill" objectFit="contain" priority/>
+        <Image
+          src={landingImage}
+          alt=""
+          layout="fill"
+          objectFit="contain"
+          priority
+        />
       </div>
     </section>
   );
 }
 
 export default Landing;
-
